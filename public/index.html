@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="description" content="BackEnd de Ambrosía">	
+    <meta name="keywords" content="BackEnd,Ambrosía">
+    <title>Ambros&iacute;a BackEnd Data</title>
+    <script src="socket.io/lib/socket.io.js"></script>
+    <script src="js/jquery-2.2.1.min.js"></script>    
+    <link type="text/css" href="css/mystyle.css" rel="stylesheet"/>    
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script src="js/funciones.js" type="text/javascript"></script>
+    
+    <script type="text/javascript">
+        
+        var socket;
+        var UltimoFoco;
+        var CompanyId;
+        var BufferIdImpresora;
+        var BufferNombreImpresora;
+        var InsertUpdateImpresora = 'Update';
+        var NumeroImpresoras;
+        var BtPrevImpresoraState;
+        var BtNextImpresoraState;
+        
+        
+        $(document).ready(function(){                       
+            
+            socket = io.connect(window.location.hostname);
+            
+            socket.on('Error',function(data){
+                alert('Error: ' + data.Error);
+            });
+            
+            $('#imgloader').hide();            
+            $('#toolsbarcontainer').hide();
+            $('#elementoscontainer').hide();
+            $('#galeriacontainer').hide();
+            $('#datosempresa').hide();
+            $('#datosimpresoras').hide();
+            
+            $('#login').click(function(){ 
+ 
+                //Validar campos no vacios
+                if ($('#nombre').val()==''){
+                    //Mensage
+                    if (($('#colortitulo').attr('class'))=='modal-header modal-header-info'){
+                        $('#colortitulo').toggleClass('modal-header-info modal-header-warning'); 
+                    }                    
+                    $('#mensage').text('Debe de introducir un nombre o nick');
+                    $('#titulo').text('Atencion!');
+                    $('#dialoginfo').modal({
+                        backdrop:'static',
+                        keyboard:false  
+                    });
+                    UltimoFoco = $('#nombre').attr('id');
+                    return
+                }
+                
+                if ($('#clave').val()==''){
+                    //Mensage
+                    if (($('#colortitulo').attr('class'))=='modal-header modal-header-info'){
+                        $('#colortitulo').toggleClass('modal-header-info modal-header-warning'); 
+                    }                    
+                    $('#mensage').text('Debe de introducir una clave');
+                    $('#titulo').text('Atencion!');
+                    $('#dialoginfo').modal({
+                        backdrop:'static',
+                        keyboard:false  
+                    });
+                    //$('#clave').focus();
+                    UltimoFoco = $('#clave').attr('id');
+                    return
+                }
+                
+                socket.emit('login',{User:$('#nombre').val(),Pass:$('#clave').val()});
+                
+            });
+            
+            socket.on('LoginBackOk',function(data){
+                
+                CompanyId = data.CompanyId;                
+                $('#estado').text('Conectado');
+                $('#imgcontainer').hide();
+                $('#logincontainer').hide();                
+                
+                CargarDatos();
+                
+            });
+            
+            socket.on('LoginBackNotFound',function(data){
+                $('#estado').text('No conectado');
+                //Mensage
+                if (($('#colortitulo').attr('class'))=='modal-header modal-header-info'){
+                    $('#colortitulo').toggleClass('modal-header-info modal-header-warning'); 
+                }                    
+                $('#mensage').text('Nombre de usuario o clave incorrecta');
+                $('#titulo').text('Atencion!');
+                $('#dialoginfo').modal({
+                    backdrop:'static',
+                    keyboard:false  
+                }); 
+            });                      
+            
+            //Recuperar contraseña
+            //$("#logincontainer a").click(function(){     
+            $('#recuperarpassword').click(function(){            
+                
+                if ($('#nombre').val()==''){
+                    //Mensage
+                    UltimoFoco = 'nombre';
+                    if (($('#colortitulo').attr('class'))=='modal-header modal-header-info'){
+                       $('#colortitulo').toggleClass('modal-header-info modal-header-warning'); 
+                    }                    
+                    $('#mensage').text('Debe de introducir un nombre o nick');
+                    $('#titulo').text('Atencion!');
+                    $('#dialoginfo').modal({
+                        backdrop:'static',
+                        keyboard:false  
+                    });                    
+                    return;
+                }                
+                
+                $('#imgloader').show();
+                $('#login').prop('disabled',true);
+                $('#newUser').prop('disabled',true);
+                $('#recuperarpassword').hide();
+                                                
+                socket.emit('RecPass',{User:$('#nombre').val()});                
+                
+            });
+            
+            socket.on('RecPassBackOk',function(data){                               
+                
+                $('#estado').text('Clave enviada');
+                $('#imgloader').hide();
+                $('button').prop('disabled',false);
+                $('#recuperarpassword').show();
+                
+                //Mensage
+                if (($('#colortitulo').attr('class'))=='modal-header modal-header-warning'){
+                    $('#colortitulo').toggleClass('modal-header-warning modal-header-info'); 
+                }                    
+                $('#mensage').text('La clave ha sido enviada a su cuenta de correo electronico');
+                $('#titulo').text('Atencion!');
+                $('#dialoginfo').modal({
+                    backdrop:'static',
+                    keyboard:false  
+                });
+                UltimoFoco = 'clave';
+                $('#clave').val('');
+                
+            });
+            
+            socket.on('RecPassBackNotFound',function(data){                               
+                
+                $('#estado').text('Email no encontrado');
+                $('#imgloader').hide();
+                $('button').prop('disabled',false);
+                $('#recuperarpassword').show();
+                
+                //Mensage
+                if (($('#colortitulo').attr('class'))=='modal-header modal-header-info'){
+                    $('#colortitulo').toggleClass('modal-header-info modal-header-warning'); 
+                }                    
+                $('#mensage').text('Clave no encontrada para este nombre de usuario');
+                $('#titulo').text('Atencion!');
+                $('#dialoginfo').modal({
+                    backdrop:'static',
+                    keyboard:false  
+                });
+                UltimoFoco = 'nombre';
+                
+            });
+                                 
+            $("#dialoginfo").on("hidden.bs.modal",function(){                
+                if (UltimoFoco=='nombre'){
+                    $('#nombre').focus();
+                }else if (UltimoFoco=='clave'){
+                    $('#clave').focus();
+                }else if (UltimoFoco=='nuevousuariomodal'){
+                    $('#nuevousuariomodal').modal({
+                        backdrop:'static',
+                        keyboard:false  
+                    });
+                }else if ((UltimoFoco=='email1')||(UltimoFoco=='nombrenick')||(UltimoFoco=='clave1')||(UltimoFoco=='clave2')){                    
+                    $('#nuevousuariomodal').modal({
+                        backdrop:'static',
+                        keyboard:false  
+                    });                    
+                }else if (UltimoFoco=='nombreimpresora'){
+                    $('#impresorasmodal').modal({
+                        backdrop:'static',
+                        keyboard:false  
+                    });
+                }                
+            });
+            
+            $('#nuevousuariomodal').on('shown.bs.modal',function(){
+                $('#email1').focus();
+                if (UltimoFoco=='nombrenick'){
+                    $('#nombrenick').focus();
+                }else if (UltimoFoco=='clave1'){
+                    $('#clave1').focus();
+                }else if (UltimoFoco=='clave2'){
+                    $('#clave2').focus();
+                }                
+            })
+            
+            $('#newUser').click(function(){
+                $('#nuevousuariomodal').modal({
+                    backdrop:'static',
+                    keyboard:false  
+                });
+            });
+            
+            $('#GuardarCambios').click(function(){
+                
+                $('#nuevousuariomodal').modal('hide');
+                UltimoFoco = 'nuevousuariomodal';
+                if (($('#colortitulo').attr('class'))=='modal-header modal-header-info'){
+                    $('#colortitulo').toggleClass('modal-header-info modal-header-warning'); 
+                }
+                $('#titulo').text('Atencion!');
+                
+                // Validar eMail
+                if (!(checkRegexp($('#email1').val() , /^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?$/i ))){
+                    UltimoFoco = 'email1';                    
+                    $('#mensage').text('Debe de introducir una direccion de correo electronico valida');
+                    $('#dialoginfo').modal({
+                        backdrop:'static',
+                        keyboard:false  
+                    });                    
+                    return;
+                }
+                
+                // Validar nick
+                if ($('#nombrenick').val()==''){
+                    UltimoFoco = 'nombrenick';
+                    $('#mensage').text('Debe de introducir un nombre o nick');
+                    $('#dialoginfo').modal({
+                        backdrop:'static',
+                        keyboard:false  
+                    });                    
+                    return;
+                }
+                
+                // Validar clave1
+                if ($('#clave1').val()==''){
+                    UltimoFoco = 'clave1';
+                    $('#mensage').text('Debe de introducir una clave');
+                    $('#dialoginfo').modal({
+                        backdrop:'static',
+                        keyboard:false  
+                    });                    
+                    return;
+                }
+                
+                // Validar clave2
+                if ($('#clave2').val()==''){
+                    UltimoFoco = 'clave2';
+                    $('#mensage').text('Debe de repetir la clave');
+                    $('#dialoginfo').modal({
+                        backdrop:'static',
+                        keyboard:false  
+                    });                    
+                    return;
+                }
+                
+                if ($('#clave1').val()!=$('#clave2').val()){
+                    UltimoFoco = 'clave2';
+                    $('#mensage').text('La clave no es la misma');
+                    $('#dialoginfo').modal({
+                        backdrop:'static',
+                        keyboard:false  
+                    });                    
+                    return;
+                }               
+                
+                socket.emit('CheckUser',{User:$('#nombrenick').val()});
+                
+            });
+            
+            socket.on('CheckUserBack',function(data){
+                
+                if (data.User){
+                    $('#estado').text('El usuario ya existe');
+                    //Mensage
+                    if (($('#colortitulo').attr('class'))=='modal-header modal-header-info'){
+                        $('#colortitulo').toggleClass('modal-header-info modal-header-warning'); 
+                    }                    
+                    $('#mensage').text('El usuario ya existe en la base de datos');
+                    $('#titulo').text('Atencion!');
+                    $('#dialoginfo').modal({
+                        backdrop:'static',
+                        keyboard:false  
+                    });
+                    
+                }else{
+                    $('#estado').text('Nuevo usuario creado');
+                    socket.emit('CreateUser',{User:$('#nombrenick').val(),Pass:$('#clave1').val(),Email:$('#email1').val()});
+                    //Mensage
+                    if (($('#colortitulo').attr('class'))=='modal-header modal-header-warning'){
+                        $('#colortitulo').toggleClass('modal-header-warning modal-header-info'); 
+                    }                    
+                    $('#mensage').text('Nuevo usuario creado en la base de datos');
+                    $('#titulo').text('Atencion!');
+                    $('#dialoginfo').modal({
+                        backdrop:'static',
+                        keyboard:false  
+                    });
+                    UltimoFoco='nombre';
+                    $('#nombre').val('');
+                    $('#clave').val('');
+                    $('#nombre').focus();
+                }
+            
+            });
+            
+            $('#datosempresa').click(function(){
+                
+                socket.emit('CargarDatosEmpresa',{CompanyId:CompanyId});                
+               
+            });
+            
+            socket.on('CargarDatosEmpresaBack',function(data){
+                
+                $('#nombrecomercial').val(data.NombreComercial);
+                $('#nombrefiscal').val(data.NombreFiscal);
+                $('#direccion').val(data.Direccion);
+                $('#codigopostal').val(data.CodigoPostal);
+                $('#ciudad').val(data.Ciudad);
+                $('#nif').val(data.NIF);
+                $('#telefono').val(data.Telefono);
+                
+                $('#datosempresamodal').modal({
+                    backdrop:'static',
+                    keyboard:false  
+                });
+                
+            });   
+            
+            $('#GuardarDatosEmpresa').click(function(){
+                
+                GuardarDatosEmpresa(CompanyId,$('#nombrecomercial').val(),$('#nombrefiscal').val(),$('#direccion').val(),$('#codigopostal').val(),$('#ciudad').val(),$('#nif').val(),$('#telefono').val());   
+                
+            });
+            
+            $('#datosimpresoras').click(function(){
+                
+                CargarDatosImpresoras();                              
+               
+            });
+            
+            socket.on('CargarDatosImpresorasBack',function(data){
+                
+                CargarDatosImpresorasBack(data);
+                
+            });
+            
+            $('#NuevaImpresora').click(function(){
+                
+                NuevaImpresora();                             
+               
+            });            
+            
+            $('#nombreimpresora').on('input',function(){
+                
+                $('#GuardarImpresora').prop('disabled',false);
+                $('#CacelarEditImpresora').prop('disabled',false);
+                
+            });
+            
+            $('#GuardarImpresora').click(function(){
+                
+                GuardarNuevaImpresora();                             
+               
+            });
+            
+            $('#CacelarEditImpresora').click(function(){
+                
+                CacelarEditImpresora();                             
+               
+            });            
+            
+            socket.on('GuardarNuevaImpresoraBack',function(data){
+                
+                BufferIdImpresora = data.ImpresoraId;                    
+                
+            });
+            
+            $('#impresorasmodal').on('shown.bs.modal',function(){
+                
+                if (UltimoFoco=='nombreimpresora'){
+                    $('#nombreimpresora').focus();
+                }
+                
+            });
+            
+            $('#NextImpresora').click(function(){
+                
+                NextImpresora();                             
+               
+            });
+            
+            $('#PrevImpresora').click(function(){
+                
+                PrevImpresora();                             
+               
+            });
+            
+            socket.on('CargarDatosNextImpresorasBack',function(data){
+                
+                CargarDatosNextImpresorasBack(data);
+                
+            });
+            
+            socket.on('CargarDatosPrevImpresorasBack',function(data){
+                
+                CargarDatosPrevImpresorasBack(data);
+                
+            });
+            
+            $('#BorrarImpresora').click(function(){
+                
+                BorrarImpresora();                             
+               
+            });
+            
+            socket.on('BorrarImpresoraBack',function(data){
+                
+                CargarDatosImpresoras();
+                
+            });
+        
+        }); //End jQuery ready function
+        
+    </script>
+    
+</head>
+<body>
+    
+    <div style="border:6px white solid; width:1100px; height:746px; margin:0 auto 0 auto;">
+        <img id="imgloader" class="Loader" src="res/img/imgloader.gif"/>
+        <div style="background-color:#e8e8e8; border:0px black solid; width:1094px; height:60px;">
+            <label style="color:black; margin-left:130px; margin-top:10px; float:left; font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:26px;">Bienvenido a Ambros&iacute;a BackEnd Data v0.0.3 por Apolosoft (c) 2017</label>								
+        </div>
+        <div style="background-color:#e8e8e8; border:0px black solid; width:1094px; height:626px; margin-top:6px;">
+            <div id="imgcontainer" style="background-color:#e8e8e8; border:6px white solid; width:754px; height:494px; margin-top:64px; margin-left:30px; float:left;">
+                <img src="res/img/restaurante.jpg">    
+            </div>
+            <div id="logincontainer" style="background-color:#e8e8e8; border:6px white solid; width:250px; height:494px; margin-top:64px; margin-left:30px; float:left;">
+                <label for="nombre" style="margin:20px 0px 0px 6px; display:block; float:left; font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:16px;">Nombre o nick</label>
+                <input type="text" id="nombre" class="form-control" maxlength="20" placeholder="Introducir nombre" style="float:left; margin-left:6px; margin-top:0px; width:227px; font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:16px;"/>
+                <label for="pass" style="margin:20px 0px 0px 6px; display:block; float:left; font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:16px;">Clave</label>
+                <input type="password" id="clave" class="form-control" maxlength="20" placeholder="Introducir clave" style="float:left; margin-left:6px; margin-top:0px; width:227px; font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:16px;"/>
+                <button type="button" id="login" class="btn btn-default btn-lg" style="float:left; margin-left:7px; margin-top:20px;">
+                    <span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> Entrar
+                </button>
+                <button type="button" id="newUser" class="btn btn-default btn-lg" style="float:left; margin-left:7px; margin-top:20px;">
+                    <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Nuevo
+                </button>
+                <a href="#" id="recuperarpassword" style="float:left; margin-left:28px; margin-top:20px; font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:16px;">Recuperar contrase&ntilde;a</a>
+            </div>
+            <div id="toolsbarcontainer" style="background-color:#e8e8e8; border:6px white solid; width:1070px; height:84px; margin-top:12px; margin-left:12px; float:left;">
+            </div>
+            <div id="elementoscontainer" style="background-color:#e8e8e8; border:6px white solid; width:529px; height:506px; margin-top:12px; margin-left:12px; float:left;">
+            </div>
+            <div id="galeriacontainer" style="background-color:#e8e8e8; border:6px white solid; width:529px; height:506px; margin-top:12px; margin-left:12px; float:left;">
+            </div>
+        </div>
+        <div style="background-color:#e8e8e8; border:0px black solid; width:1094px; height:40px; margin-top:6px;">
+            <label style="color:black; margin-left:10px; margin-top:10px; float:left; font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:16px;">Estado:</label>								
+            <label id="estado" style="color:black; margin-left:10px; margin-top:10px; float:left; font-family:Arial,Helvetica,sans-serif; font-size:16px;"></label>								
+            <a href="#" id="datosempresa" style="float:right; margin-left:16px; margin-top:10px; margin-right:12px; font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:16px;">Datos empresa</a>            
+            <a href="#" id="datosimpresoras" style="float:right; margin-left:16px; margin-top:10px; margin-right:12px; font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:16px;">Impresoras</a>            
+        </div>
+    </div>        
+    
+    <!-- Modal Informacion -->
+    <div class="modal fade" id="dialoginfo" role="dialog">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div id="colortitulo" class="modal-header modal-header-info">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 id="titulo" class="modal-title">Informacion</h4>
+                </div>
+                <div class="modal-body">
+                    <p id="mensage" style="font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:16px;" >This is a small modal.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Cerrar</button>
+                </div>
+            </div>            
+        </div>
+    </div>
+    
+    <!-- Modal  New User-->
+    <div class="modal fade" id="nuevousuariomodal" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="width:350px;">
+            <div class="modal-content">
+                
+                <!-- Modal Header -->
+                <div class="modal-header modal-header-info">
+                    <button type="button" class="close" data-dismiss="modal">
+                           <span aria-hidden="true">&times;</span>
+                           <span class="sr-only">Close</span>
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">Crear usuario nuevo</h4>
+                </div>
+                
+                <!-- Modal Body -->
+                <div class="modal-body">                    
+                    <form class="form-horizontal" role="form">
+                      <div class="form-group">
+                        <label  class="col-sm-2 control-label" for="email">Email</label>
+                        <div class="col-sm-10">
+                            <input type="email" class="form-control" id="email1" maxlength="50" placeholder="Introducir correo electronico" style="font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:16px;"/>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-2 control-label" for="nombre" >Nombre o nick</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="nombrenick" maxlength="20" placeholder="Introducir nombre" style="font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:16px;"/>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-2 control-label" for="inputPassword1" >Clave</label>
+                        <div class="col-sm-10">
+                            <input type="password" class="form-control" id="clave1" maxlength="20" placeholder="Introducir clave" style="font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:16px;"/>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-2 control-label" for="inputPassword2" >Repetir clave</label>
+                        <div class="col-sm-10">
+                            <input type="password" class="form-control" id="clave2" maxlength="20" placeholder="Repetir clave" style="font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:16px;"/>
+                        </div>
+                      </div>
+                    </form>                    
+                </div>
+                
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default btn-lg" data-dismiss="modal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Cerrar</button>
+                    <button type="button" id="GuardarCambios" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> Guardar cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal  Datos Empresa -->
+    <div class="modal fade" id="datosempresamodal" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="width:500px;">
+            <div class="modal-content">
+                
+                <!-- Modal Header -->
+                <div class="modal-header modal-header-info">
+                    <button type="button" class="close" data-dismiss="modal">
+                           <span aria-hidden="true">&times;</span>
+                           <span class="sr-only">Close</span>
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">Datos de la empresa</h4>
+                </div>
+                
+                <!-- Modal Body -->
+                <div class="modal-body">                    
+                    <form class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <label  class="col-sm-2 control-label" for="nombcomerc">Nombre comercial</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="nombrecomercial" maxlength="50" placeholder="Introducir nombre comercial" style="font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:16px;"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label" for="nombfisc" >Nombre fiscal</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="nombrefiscal" maxlength="50" placeholder="Introducir nombre fiscal" style="font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:16px;"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label" for="direcc" >Direccion</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="direccion" maxlength="50" placeholder="Introducir direccion" style="font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:16px;"/>
+                            </div>
+                        </div>                      
+                        <div class="row">
+                            <div class="col-xs-4 form-group">
+                                <label class="col-sm-2 control-label" for="cp" >Codigo Postal</label>
+                                <input type="text" class="form-control" id="codigopostal" maxlength="5" placeholder="C.P." style="margin-left:15px; font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:16px;"/>
+                            </div>
+                            <div class="col-xs-8 form-group" style="margin-left:15px;">
+                                <label class="col-sm-2 control-label" for="ciud" >Ciudad</label>
+                                <input type="text" class="form-control" id="ciudad" maxlength="30" placeholder="Introducir ciudad" style="margin-left:15px; font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:16px;"/>
+                            </div>
+                        </div>                      
+                        <div class="row">
+                            <div class="col-xs-6 form-group">
+                                <label class="col-sm-2 control-label" for="N" >N.I.F.</label>
+                                <input type="text" class="form-control" id="nif" maxlength="10" placeholder="N.I.F." style="margin-left:15px; font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:16px;"/>
+                            </div>
+                            <div class="col-xs-6 form-group" style="margin-left:15px;">
+                                <label class="col-sm-2 control-label" for="telefon" >Telefono</label>
+                                <input type="text" class="form-control" id="telefono" maxlength="15" placeholder="Telefono" style="margin-left:15px; font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:16px;"/>
+                            </div>
+                        </div>                   
+                    </form>                    
+                </div>
+                
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default btn-lg" data-dismiss="modal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Cerrar</button>
+                    <button type="button" id="GuardarDatosEmpresa" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> Guardar cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal  Impresora -->
+    <div class="modal fade" id="impresorasmodal" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="width:400px;">
+            <div class="modal-content">
+                
+                <!-- Modal Header -->
+                <div class="modal-header modal-header-info">
+                    <button type="button" class="close" data-dismiss="modal">
+                           <span aria-hidden="true">&times;</span>
+                           <span class="sr-only">Close</span>
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">Impresoras</h4>
+                </div>
+                
+                <!-- Modal Body -->
+                <div class="modal-body">                    
+                    <form class="form-horizontal" role="form">                      
+                      <div class="form-group">
+                        <label class="col-sm-2 control-label" for="nombimp" >Nombre impresora</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="nombreimpresora" maxlength="30" placeholder="Introducir nombre" style="font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:16px;"/>
+                        </div>
+                      </div>                      
+                    </form>                    
+                </div>
+                
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                    <div class="btn-group" role="group">
+                        <button type="button" id="PrevImpresora" class="btn btn-default btn-lg" title="Previa"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span></button>
+                        <button type="button" id="NextImpresora" class="btn btn-default btn-lg" title="Siguiente"><span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></button>
+                        <button type="button" id="NuevaImpresora" class="btn btn-default btn-lg" title="Nueva"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span></button>
+                        <button type="button" id="BorrarImpresora" class="btn btn-default btn-lg" title="Eliminar"><span class="glyphicon glyphicon-minus-sign" aria-hidden="true"></span></button>
+                        <button type="button" id="GuardarImpresora" class="btn btn-default btn-lg" title="Guardar"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>
+                        <button type="button" id="CacelarEditImpresora" class="btn btn-default btn-lg" title="Cancelar"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+                    </div>
+                    <button type="button" class="btn btn-primary btn-lg" data-dismiss="modal" title="Salir"><span class="glyphicon glyphicon-share" aria-hidden="true"></span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</body>
+</html>
