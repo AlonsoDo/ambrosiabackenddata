@@ -7,7 +7,7 @@ var mysql = require('mysql');
 var pool  = mysql.createPool({
     host     : 'eu-cdbr-west-01.cleardb.com',
     user     : 'bec9f1dbb65163',
-    password : '8a687c05', 
+    password : '****', 
     database : 'heroku_f5b0ff88b3e8283',
     connectionLimit : 200
 });
@@ -106,7 +106,7 @@ io.sockets.on('connection',function(socket){
                             service: "hotmail",
                             auth: {
                                 user: "alonso_caspi@hotmail.com",
-                                pass: "CaspiAutentico2"
+                                pass: "****"
                            }
                         });        
                         smtpTransport.sendMail({
