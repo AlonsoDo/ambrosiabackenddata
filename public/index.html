@@ -18,6 +18,7 @@
         var socket;
         var UltimoFoco;
         var CompanyId;
+        
         var BufferIdImpresora;
         var BufferNombreImpresora;
         var InsertUpdateImpresora = 'Update';
@@ -25,6 +26,20 @@
         var BtPrevImpresoraState;
         var BtNextImpresoraState;
         
+        var BufferIdTerminal;
+        var BufferNombreTerminal;
+        var InsertUpdateTerminal = 'Update';
+        var NumeroTerminales;
+        var BtPrevTerminalState;
+        var BtNextTerminalState;
+        
+        var BufferIdEmpleado;
+        var BufferNombreEmpleado;
+        var BufferClaveEmpleado;
+        var InsertUpdateEmpleado = 'Update';
+        var NumeroEmpleados;
+        var BtPrevEmpleadoState;
+        var BtNextEmpleadoState;
         
         $(document).ready(function(){                       
             
@@ -40,6 +55,8 @@
             $('#galeriacontainer').hide();
             $('#datosempresa').hide();
             $('#datosimpresoras').hide();
+            $('#datosterminales').hide();
+            $('#datosempleados').hide();
             
             $('#login').click(function(){ 
  
@@ -192,6 +209,21 @@
                     });                    
                 }else if (UltimoFoco=='nombreimpresora'){
                     $('#impresorasmodal').modal({
+                        backdrop:'static',
+                        keyboard:false  
+                    });
+                }else if (UltimoFoco=='nombreterminal'){
+                    $('#terminalesmodal').modal({
+                        backdrop:'static',
+                        keyboard:false  
+                    });
+                }else if (UltimoFoco=='nombreempleado'){
+                    $('#empleadosmodal').modal({
+                        backdrop:'static',
+                        keyboard:false  
+                    });
+                }else if (UltimoFoco=='claveempleado'){
+                    $('#empleadosmodal').modal({
                         backdrop:'static',
                         keyboard:false  
                     });
@@ -371,6 +403,14 @@
                 $('#GuardarImpresora').prop('disabled',false);
                 $('#CacelarEditImpresora').prop('disabled',false);
                 
+                if (InsertUpdateImpresora == 'Inserting'){
+                    return
+                }
+                
+                if (NumeroImpresoras==0){
+                    InsertUpdateImpresora = 'Inserting';                    
+                }
+                               
             });
             
             $('#GuardarImpresora').click(function(){
@@ -434,6 +474,209 @@
                 CargarDatosImpresoras();
                 
             });
+            
+            //Terminales
+            $('#datosterminales').click(function(){
+                
+                CargarDatosTerminales();                              
+               
+            });
+            
+            socket.on('CargarDatosTerminalesBack',function(data){
+                
+                CargarDatosTerminalesBack(data);
+                
+            });
+            
+            $('#NuevaTerminal').click(function(){
+                
+                NuevaTerminal();                             
+               
+            });
+            
+            $('#nombreterminal').on('input',function(){
+                
+                $('#GuardarTerminal').prop('disabled',false);
+                $('#CacelarEditTerminal').prop('disabled',false);                
+                
+                if (InsertUpdateTerminal == 'Inserting'){
+                    return
+                }
+                
+                if (NumeroTerminales==0){
+                    InsertUpdateTerminal = 'Inserting';                    
+                }                             
+                
+            });
+            
+            $('#GuardarTerminal').click(function(){
+                
+                GuardarNuevaTerminal();                             
+               
+            });
+            
+            $('#CacelarEditTerminal').click(function(){
+                
+                CacelarEditTerminal();                             
+               
+            });
+            
+            socket.on('GuardarNuevaTerminalBack',function(data){
+                
+                BufferIdTerminal = data.TerminalId;                    
+                
+            });
+            
+            $('#terminalesmodal').on('shown.bs.modal',function(){
+                
+                if (UltimoFoco=='nombreterminal'){
+                    $('#nombreterminal').focus();
+                }
+                
+            });
+            
+            $('#NextTerminal').click(function(){
+                
+                NextTerminal();                             
+               
+            });
+            
+            $('#PrevTerminal').click(function(){
+                
+                PrevTerminal();                             
+               
+            });
+            
+            socket.on('CargarDatosNextTerminalesBack',function(data){
+                
+                CargarDatosNextTerminalesBack(data);
+                
+            });
+            
+            socket.on('CargarDatosPrevTerminalesBack',function(data){
+                
+                CargarDatosPrevTerminalesBack(data);
+                
+            });
+            
+            $('#BorrarTerminal').click(function(){
+                
+                BorrarTerminal();                             
+               
+            });
+            
+            socket.on('BorrarTerminalBack',function(data){
+                
+                CargarDatosTerminales();
+                
+            });
+            
+            //Claves empleados
+            $('#datosempleados').click(function(){
+                
+                CargarDatosEmpleados();                            
+               
+            });
+            
+            socket.on('CargarDatosEmpleadosBack',function(data){
+                
+                CargarDatosEmpleadosBack(data);
+                
+            });
+            
+            $('#NuevoEmpleado').click(function(){
+                
+                NuevoEmpleado();                             
+               
+            });
+            
+            $('#nombreempleado').on('input',function(){
+                
+                $('#GuardarEmpleado').prop('disabled',false);
+                $('#CacelarEditEmpleado').prop('disabled',false);
+                
+                if (InsertUpdateEmpleado == 'Inserting'){
+                    return
+                }
+                
+                if (NumeroEmpleados==0){
+                    InsertUpdateEmpleado = 'Inserting';                    
+                }
+                                
+            });
+            
+            $('#claveempleado').on('input',function(){
+                
+                $('#GuardarEmpleado').prop('disabled',false);
+                $('#CacelarEditEmpleado').prop('disabled',false);
+                
+                if (InsertUpdateEmpleado == 'Inserting'){
+                    return
+                }
+                
+                if (NumeroEmpleados==0){
+                    InsertUpdateEmpleado = 'Inserting';                   
+                }                            
+                
+            });
+            
+            $('#GuardarEmpleado').click(function(){
+                
+                GuardarNuevoEmpleado();                             
+               
+            });
+            
+            $('#empleadosmodal').on('shown.bs.modal',function(){
+                
+                if (UltimoFoco=='nombreempleado'){
+                    $('#nombreempleado').focus();
+                }else if (UltimoFoco=='claveempleado'){
+                    $('#claveempleado').focus();
+                }
+                
+            });
+            
+            $('#CacelarEditEmpleado').click(function(){
+                
+                CacelarEditEmpleado();                             
+               
+            });
+            
+            $('#NextEmpleado').click(function(){
+                
+                NextEmpleado();                             
+               
+            });
+            
+            socket.on('CargarDatosNextEmpleadosBack',function(data){
+                
+                CargarDatosNextEmpleadosBack(data);
+                
+            });
+            
+            $('#PrevEmpleado').click(function(){
+                
+                PrevEmpleado();                             
+               
+            });
+            
+            socket.on('CargarDatosPrevEmpleadosBack',function(data){
+                
+                CargarDatosPrevEmpleadosBack(data);
+                
+            });
+            
+            $('#BorrarEmpleado').click(function(){
+                
+                BorrarEmpleado();                             
+               
+            });
+            
+            socket.on('BorrarEmpleadoBack',function(data){
+                
+                CargarDatosEmpleados();
+                
+            });
         
         }); //End jQuery ready function
         
@@ -445,7 +688,7 @@
     <div style="border:6px white solid; width:1100px; height:746px; margin:0 auto 0 auto;">
         <img id="imgloader" class="Loader" src="res/img/imgloader.gif"/>
         <div style="background-color:#e8e8e8; border:0px black solid; width:1094px; height:60px;">
-            <label style="color:black; margin-left:130px; margin-top:10px; float:left; font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:26px;">Bienvenido a Ambros&iacute;a BackEnd Data v0.0.3 por Apolosoft (c) 2017</label>								
+            <label style="color:black; margin-left:130px; margin-top:10px; float:left; font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:26px;">Bienvenido a Ambros&iacute;a BackEnd Data v0.0.5 por Apolosoft (c) 2017</label>								
         </div>
         <div style="background-color:#e8e8e8; border:0px black solid; width:1094px; height:626px; margin-top:6px;">
             <div id="imgcontainer" style="background-color:#e8e8e8; border:6px white solid; width:754px; height:494px; margin-top:64px; margin-left:30px; float:left;">
@@ -476,6 +719,8 @@
             <label id="estado" style="color:black; margin-left:10px; margin-top:10px; float:left; font-family:Arial,Helvetica,sans-serif; font-size:16px;"></label>								
             <a href="#" id="datosempresa" style="float:right; margin-left:16px; margin-top:10px; margin-right:12px; font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:16px;">Datos empresa</a>            
             <a href="#" id="datosimpresoras" style="float:right; margin-left:16px; margin-top:10px; margin-right:12px; font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:16px;">Impresoras</a>            
+            <a href="#" id="datosterminales" style="float:right; margin-left:16px; margin-top:10px; margin-right:12px; font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:16px;">Terminales</a>            
+            <a href="#" id="datosempleados" style="float:right; margin-left:16px; margin-top:10px; margin-right:12px; font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:16px;">Empleados</a>            
         </div>
     </div>        
     
@@ -652,6 +897,96 @@
                         <button type="button" id="BorrarImpresora" class="btn btn-default btn-lg" title="Eliminar"><span class="glyphicon glyphicon-minus-sign" aria-hidden="true"></span></button>
                         <button type="button" id="GuardarImpresora" class="btn btn-default btn-lg" title="Guardar"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>
                         <button type="button" id="CacelarEditImpresora" class="btn btn-default btn-lg" title="Cancelar"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+                    </div>
+                    <button type="button" class="btn btn-primary btn-lg" data-dismiss="modal" title="Salir"><span class="glyphicon glyphicon-share" aria-hidden="true"></span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal  Terminal -->
+    <div class="modal fade" id="terminalesmodal" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="width:400px;">
+            <div class="modal-content">
+                
+                <!-- Modal Header -->
+                <div class="modal-header modal-header-info">
+                    <button type="button" class="close" data-dismiss="modal">
+                           <span aria-hidden="true">&times;</span>
+                           <span class="sr-only">Close</span>
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">Terminales</h4>
+                </div>
+                
+                <!-- Modal Body -->
+                <div class="modal-body">                    
+                    <form class="form-horizontal" role="form">                      
+                      <div class="form-group">
+                        <label class="col-sm-2 control-label" for="nombimp" >Nombre terminal</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="nombreterminal" maxlength="30" placeholder="Introducir nombre" style="font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:16px;"/>
+                        </div>
+                      </div>                      
+                    </form>                    
+                </div>
+                
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                    <div class="btn-group" role="group">
+                        <button type="button" id="PrevTerminal" class="btn btn-default btn-lg" title="Previa"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span></button>
+                        <button type="button" id="NextTerminal" class="btn btn-default btn-lg" title="Siguiente"><span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></button>
+                        <button type="button" id="NuevaTerminal" class="btn btn-default btn-lg" title="Nueva"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span></button>
+                        <button type="button" id="BorrarTerminal" class="btn btn-default btn-lg" title="Eliminar"><span class="glyphicon glyphicon-minus-sign" aria-hidden="true"></span></button>
+                        <button type="button" id="GuardarTerminal" class="btn btn-default btn-lg" title="Guardar"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>
+                        <button type="button" id="CacelarEditTerminal" class="btn btn-default btn-lg" title="Cancelar"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+                    </div>
+                    <button type="button" class="btn btn-primary btn-lg" data-dismiss="modal" title="Salir"><span class="glyphicon glyphicon-share" aria-hidden="true"></span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal  Empleados -->
+    <div class="modal fade" id="empleadosmodal" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="width:400px;">
+            <div class="modal-content">
+                
+                <!-- Modal Header -->
+                <div class="modal-header modal-header-info">
+                    <button type="button" class="close" data-dismiss="modal">
+                           <span aria-hidden="true">&times;</span>
+                           <span class="sr-only">Close</span>
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">Empleados</h4>
+                </div>
+                
+                <!-- Modal Body -->
+                <div class="modal-body">                    
+                    <form class="form-horizontal" role="form">                      
+                      <div class="form-group">
+                        <label class="col-sm-2 control-label" for="nombemp" >Nombre empleado</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="nombreempleado" maxlength="30" placeholder="Introducir nombre" style="font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:16px;"/>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-2 control-label" for="claveemp" >Clave</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="claveempleado" maxlength="20" placeholder="Introducir clave" style="font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:16px;"/>
+                        </div>
+                      </div>
+                    </form>                    
+                </div>
+                
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                    <div class="btn-group" role="group">
+                        <button type="button" id="PrevEmpleado" class="btn btn-default btn-lg" title="Previo"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span></button>
+                        <button type="button" id="NextEmpleado" class="btn btn-default btn-lg" title="Siguiente"><span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></button>
+                        <button type="button" id="NuevoEmpleado" class="btn btn-default btn-lg" title="Nuevo"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span></button>
+                        <button type="button" id="BorrarEmpleado" class="btn btn-default btn-lg" title="Eliminar"><span class="glyphicon glyphicon-minus-sign" aria-hidden="true"></span></button>
+                        <button type="button" id="GuardarEmpleado" class="btn btn-default btn-lg" title="Guardar"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>
+                        <button type="button" id="CacelarEditEmpleado" class="btn btn-default btn-lg" title="Cancelar"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
                     </div>
                     <button type="button" class="btn btn-primary btn-lg" data-dismiss="modal" title="Salir"><span class="glyphicon glyphicon-share" aria-hidden="true"></span></button>
                 </div>

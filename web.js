@@ -7,7 +7,7 @@ var mysql = require('mysql');
 var pool  = mysql.createPool({
     host     : 'eu-cdbr-west-01.cleardb.com',
     user     : 'bec9f1dbb65163',
-    password : '****', 
+    password : '8a687c05', 
     database : 'heroku_f5b0ff88b3e8283',
     connectionLimit : 200
 });
@@ -360,6 +360,311 @@ io.sockets.on('connection',function(socket){
                     throw err;                    
                 }else{                    
                     socket.emit('BorrarImpresoraBack',{});
+                }                
+            });
+            connection.release();
+        });  
+        
+    });
+    
+    socket.on('CargarDatosTerminales',function(data){                
+        
+        var cQuery;    
+      
+        pool.getConnection(function(err,connection){
+            cQuery = "SELECT * FROM terminales WHERE CompanyId='"+data.CompanyId+"'";
+            connection.query(cQuery,function(err,rows){
+                if (err){
+                    socket.emit('Error',{Error:err.message});
+                    console.log('Error: ' + err.message);
+                    throw err;                    
+                }else{                     
+                    if (rows.length>0){                    
+                        var TerminalId = rows[0].TerminalId;
+                        var NombreTerminal = rows[0].NombreTerminal;                    
+                        socket.emit('CargarDatosTerminalesBack',{TerminalId:TerminalId,NombreTerminal:NombreTerminal,NumeroTerminales:rows.length});                                                            
+                    }else{
+                        socket.emit('CargarDatosTerminalesBack',{TerminalId:0,NombreTerminal:'',NumeroTerminales:0});
+                    }
+                }                
+            });
+            connection.release();
+        });        
+        
+    });
+    
+    socket.on('GuardarNuevaTerminal',function(data){
+        
+        console.log(data.NombreTerminal);
+        
+        var cQuery;    
+      
+        pool.getConnection(function(err,connection){
+            cQuery = "INSERT INTO terminales(NombreTerminal,CompanyId) VALUES ('"+data.NombreTerminal+"','"+data.CompanyId+"')";
+            connection.query(cQuery,function(err,rows){
+                if (err){
+                    socket.emit('Error',{Error:err.message});
+                    console.log('Error: ' + err.message);
+                    throw err;
+                }else{ 
+                    console.log('Nueva terminal creada con Id: ' + rows.insertId);
+                    socket.emit('GuardarNuevaTerminalBack',{TerminalId:rows.insertId});
+                }                
+            });
+            connection.release();
+        });  
+        
+    });
+    
+    socket.on('ModificarNombreTerminal',function(data){
+        
+        console.log(data.NombreTerminal);
+        
+        var cQuery;    
+      
+        pool.getConnection(function(err,connection){
+            
+            cQuery = "UPDATE terminales SET NombreTerminal='"+data.NombreTerminal +"' WHERE TerminalId='"+data.BufferIdTerminal+"'";
+            
+            connection.query(cQuery,function(err,rows){
+                if (err){
+                    socket.emit('Error',{Error:err.message});
+                    console.log('Error: ' + err.message);
+                    throw err;
+                }else{ 
+                    console.log('Cambio de nombre de terminal');                                                          
+                }                
+            });
+            connection.release();
+        });  
+        
+    });
+    
+    socket.on('NextTerminal',function(data){
+        
+        console.log(data.BufferIdTerminal);
+        
+        var cQuery;    
+      
+        pool.getConnection(function(err,connection){
+            cQuery = "SELECT * FROM terminales WHERE TerminalId > " + data.BufferIdTerminal + " AND " + "CompanyId='"+data.CompanyId+"'";
+            connection.query(cQuery,function(err,rows){
+                if (err){
+                    socket.emit('Error',{Error:err.message});
+                    console.log('Error: ' + err.message);
+                    throw err;                    
+                }else{                     
+                    if (rows.length>0){                    
+                        var TerminalId = rows[0].TerminalId;
+                        var NombreTerminal = rows[0].NombreTerminal;                    
+                        socket.emit('CargarDatosNextTerminalesBack',{TerminalId:TerminalId,NombreTerminal:NombreTerminal,NumeroTerminales:rows.length});                                                            
+                    }else{
+                        socket.emit('CargarDatosNextTerminalesBack',{TerminalId:0,NombreTerminal:'',NumeroTerminales:0});
+                    }
+                }                
+            });
+            connection.release();
+        });  
+        
+    });
+    
+    socket.on('PrevTerminal',function(data){
+        
+        console.log(data.BufferIdTerminal);
+        
+        var cQuery;    
+      
+        pool.getConnection(function(err,connection){
+            cQuery = "SELECT * FROM terminales WHERE TerminalId < " + data.BufferIdTerminal + " AND " + "CompanyId='"+data.CompanyId+"' ORDER BY TerminalId DESC";
+            connection.query(cQuery,function(err,rows){
+                if (err){
+                    socket.emit('Error',{Error:err.message});
+                    console.log('Error: ' + err.message);
+                    throw err;                    
+                }else{                     
+                    if (rows.length>0){                    
+                        var TerminalId = rows[0].TerminalId;
+                        var NombreTerminal = rows[0].NombreTerminal;                    
+                        socket.emit('CargarDatosPrevTerminalesBack',{TerminalId:TerminalId,NombreTerminal:NombreTerminal,NumeroTerminales:rows.length});                                                            
+                    }else{
+                        socket.emit('CargarDatosPrevTerminalesBack',{TerminalId:0,NombreTerminal:'',NumeroTerminales:0});
+                    }
+                }                
+            });
+            connection.release();
+        });  
+        
+    });
+    
+    socket.on('BorrarTerminal',function(data){
+        
+        console.log(data.BufferIdTerminal);
+        
+        var cQuery;    
+      
+        pool.getConnection(function(err,connection){
+            cQuery = "DELETE FROM terminales WHERE TerminalId = " + data.BufferIdTerminal;
+            connection.query(cQuery,function(err,rows){
+                if (err){
+                    socket.emit('Error',{Error:err.message});
+                    console.log('Error: ' + err.message);
+                    throw err;                    
+                }else{                    
+                    socket.emit('BorrarTerminalBack',{});
+                }                
+            });
+            connection.release();
+        });  
+        
+    });
+    
+    socket.on('CargarDatosEmpleados',function(data){                
+        
+        var cQuery;    
+      
+        pool.getConnection(function(err,connection){
+            cQuery = "SELECT * FROM empleados WHERE CompanyId='"+data.CompanyId+"'";
+            connection.query(cQuery,function(err,rows){
+                if (err){
+                    socket.emit('Error',{Error:err.message});
+                    console.log('Error: ' + err.message);
+                    throw err;                    
+                }else{                     
+                    if (rows.length>0){                    
+                        var EmpleadoId = rows[0].EmpleadoId;
+                        var NombreEmpleado = rows[0].NombreEmpleado;
+                        var ClaveEmpleado = rows[0].ClaveEmpleado;
+                        socket.emit('CargarDatosEmpleadosBack',{EmpleadoId:EmpleadoId,NombreEmpleado:NombreEmpleado,ClaveEmpleado:ClaveEmpleado,NumeroEmpleados:rows.length});                                                            
+                    }else{
+                        socket.emit('CargarDatosEmpleadosBack',{EmpleadoId:0,NombreEmpleado:'',ClaveEmpleado:'',NumeroEmpleados:0});
+                    }
+                }                
+            });
+            connection.release();
+        });        
+        
+    });
+    
+    socket.on('GuardarNuevoEmpleado',function(data){
+        
+        console.log(data.NombreEmpleado);
+        
+        var cQuery;    
+      
+        pool.getConnection(function(err,connection){
+            cQuery = "INSERT INTO empleados(NombreEmpleado,ClaveEmpleado,CompanyId) VALUES ('"+data.NombreEmpleado+"','"+data.ClaveEmpleado+"','"+data.CompanyId+"')";
+            connection.query(cQuery,function(err,rows){
+                if (err){
+                    socket.emit('Error',{Error:err.message});
+                    console.log('Error: ' + err.message);
+                    throw err;
+                }else{ 
+                    console.log('Nuevo empleado con Id: ' + rows.insertId);
+                    socket.emit('GuardarNuevoEmpleadoBack',{EmpleadoId:rows.insertId});
+                }                
+            });
+            connection.release();
+        });  
+        
+    });
+    
+    socket.on('ModificarEmpleado',function(data){
+        
+        console.log(data.NombreEmpleado);
+        
+        var cQuery;    
+      
+        pool.getConnection(function(err,connection){
+            
+            cQuery = "UPDATE empleados SET NombreEmpleado='"+data.NombreEmpleado+"' , ClaveEmpleado='"+data.ClaveEmpleado+"' WHERE EmpleadoId='"+data.BufferIdEmpleado+"'";
+            
+            connection.query(cQuery,function(err,rows){
+                if (err){
+                    socket.emit('Error',{Error:err.message});
+                    console.log('Error: ' + err.message);
+                    throw err;
+                }else{ 
+                    console.log('Cambio de nombre de empleado');                                                          
+                }                
+            });
+            connection.release();
+        });  
+        
+    });
+    
+    socket.on('NextEmpleado',function(data){
+        
+        console.log(data.BufferIdEmpleado);
+        
+        var cQuery;    
+      
+        pool.getConnection(function(err,connection){
+            cQuery = "SELECT * FROM empleados WHERE EmpleadoId > " + data.BufferIdEmpleado + " AND " + "CompanyId='"+data.CompanyId+"'";
+            connection.query(cQuery,function(err,rows){
+                if (err){
+                    socket.emit('Error',{Error:err.message});
+                    console.log('Error: ' + err.message);
+                    throw err;                    
+                }else{                     
+                    if (rows.length>0){                    
+                        var EmpleadoId = rows[0].EmpleadoId;
+                        var NombreEmpleado = rows[0].NombreEmpleado;
+                        var ClaveEmpleado = rows[0].ClaveEmpleado;
+                        socket.emit('CargarDatosNextEmpleadosBack',{EmpleadoId:EmpleadoId,NombreEmpleado:NombreEmpleado,ClaveEmpleado:ClaveEmpleado,NumeroEmpleados:rows.length});                                                            
+                    }else{
+                        socket.emit('CargarDatosNextEmpleadosBack',{EmpleadoId:0,NombreEmpleado:'',ClaveEmpleado:'',NumeroEmpleados:0});
+                    }
+                }                
+            });
+            connection.release();
+        });  
+        
+    });
+    
+    socket.on('PrevEmpleado',function(data){
+        
+        console.log(data.BufferIdEmpleado);
+        
+        var cQuery;    
+      
+        pool.getConnection(function(err,connection){
+            cQuery = "SELECT * FROM empleados WHERE EmpleadoId < " + data.BufferIdEmpleado + " AND " + "CompanyId='"+data.CompanyId+"' ORDER BY EmpleadoId DESC";
+            connection.query(cQuery,function(err,rows){
+                if (err){
+                    socket.emit('Error',{Error:err.message});
+                    console.log('Error: ' + err.message);
+                    throw err;                    
+                }else{                     
+                    if (rows.length>0){                    
+                        var EmpleadoId = rows[0].EmpleadoId;
+                        var NombreEmpleado = rows[0].NombreEmpleado;
+                        var ClaveEmpleado = rows[0].ClaveEmpleado;
+                        socket.emit('CargarDatosPrevEmpleadosBack',{EmpleadoId:EmpleadoId,NombreEmpleado:NombreEmpleado,ClaveEmpleado:ClaveEmpleado,NumeroEmpleados:rows.length});                                                            
+                    }else{
+                        socket.emit('CargarDatosPrevEmpleadosBack',{EmpleadoId:0,NombreEmpleado:'',ClaveEmpleado:'',NumeroEmpleados:0});
+                    }
+                }                
+            });
+            connection.release();
+        });  
+        
+    });
+    
+    socket.on('BorrarEmpleado',function(data){
+        
+        console.log(data.BufferIdEmpleado);
+        
+        var cQuery;    
+      
+        pool.getConnection(function(err,connection){
+            cQuery = "DELETE FROM empleados WHERE EmpleadoId = " + data.BufferIdEmpleado;
+            connection.query(cQuery,function(err,rows){
+                if (err){
+                    socket.emit('Error',{Error:err.message});
+                    console.log('Error: ' + err.message);
+                    throw err;                    
+                }else{                    
+                    socket.emit('BorrarEmpleadoBack',{});
                 }                
             });
             connection.release();

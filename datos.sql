@@ -10,21 +10,37 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
+-- Volcando estructura para tabla heroku_f5b0ff88b3e8283.empleados
+CREATE TABLE IF NOT EXISTS `empleados` (
+  `EmpleadoId` int(11) NOT NULL AUTO_INCREMENT,
+  `NombreEmpleado` varchar(30) NOT NULL,
+  `ClaveEmpleado` varchar(20) NOT NULL,
+  `CompanyId` int(11) NOT NULL,
+  PRIMARY KEY (`EmpleadoId`)
+) ENGINE=InnoDB AUTO_INCREMENT=104 DEFAULT CHARSET=utf8;
+
+-- Volcando datos para la tabla heroku_f5b0ff88b3e8283.empleados: ~1 rows (aproximadamente)
+/*!40000 ALTER TABLE `empleados` DISABLE KEYS */;
+INSERT INTO `empleados` (`EmpleadoId`, `NombreEmpleado`, `ClaveEmpleado`, `CompanyId`) VALUES
+	(34, 'Roberto', '1234', 34),
+	(64, 'Sandra', '1234', 4),
+	(74, 'Antonio', '1234', 4),
+	(84, 'Juan', '1234', 4),
+	(94, 'Lopez', '1234', 4);
+/*!40000 ALTER TABLE `empleados` ENABLE KEYS */;
+
+
 -- Volcando estructura para tabla heroku_f5b0ff88b3e8283.impresoras
 CREATE TABLE IF NOT EXISTS `impresoras` (
   `ImpresoraId` int(11) NOT NULL AUTO_INCREMENT,
   `NombreImpresora` varchar(30) NOT NULL,
   `CompanyId` int(11) NOT NULL,
   PRIMARY KEY (`ImpresoraId`)
-) ENGINE=InnoDB AUTO_INCREMENT=254 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=294 DEFAULT CHARSET=utf8;
 
 -- Volcando datos para la tabla heroku_f5b0ff88b3e8283.impresoras: ~16 rows (aproximadamente)
 /*!40000 ALTER TABLE `impresoras` DISABLE KEYS */;
 INSERT INTO `impresoras` (`ImpresoraId`, `NombreImpresora`, `CompanyId`) VALUES
-	(24, 'Barra-Bebida', 4),
-	(34, 'Barra-Comida', 4),
-	(44, 'Cocina-Primeros', 4),
-	(54, 'Caja-Principal', 4),
 	(74, 'Cocina-Entrantes', 14),
 	(94, 'Cocina-Primeros', 14),
 	(124, 'Cocina-Segundos', 14),
@@ -36,7 +52,9 @@ INSERT INTO `impresoras` (`ImpresoraId`, `NombreImpresora`, `CompanyId`) VALUES
 	(184, 'Barra', 24),
 	(194, 'Caja', 34),
 	(234, 'Barra', 34),
-	(244, 'Cocina', 34);
+	(244, 'Cocina', 34),
+	(274, 'Cocina-Primeros', 4),
+	(284, 'Cocina-Segundos', 4);
 /*!40000 ALTER TABLE `impresoras` ENABLE KEYS */;
 
 
@@ -70,6 +88,24 @@ INSERT INTO `login` (`CompanyId`, `User`, `Pass`, `Email`, `NombreComercial`, `N
 	(84, 'Yo', '1234', 'alonso@gmail.com', '', '', '', '', '', '', ''),
 	(94, 'CaspiYo', '1234', 'alonso@gmail.com', '', '', '', '', '', '', '');
 /*!40000 ALTER TABLE `login` ENABLE KEYS */;
+
+
+-- Volcando estructura para tabla heroku_f5b0ff88b3e8283.terminales
+CREATE TABLE IF NOT EXISTS `terminales` (
+  `TerminalId` int(11) NOT NULL AUTO_INCREMENT,
+  `NombreTerminal` varchar(30) NOT NULL,
+  `CompanyId` int(11) NOT NULL,
+  PRIMARY KEY (`TerminalId`)
+) ENGINE=InnoDB AUTO_INCREMENT=164 DEFAULT CHARSET=utf8;
+
+-- Volcando datos para la tabla heroku_f5b0ff88b3e8283.terminales: ~3 rows (aproximadamente)
+/*!40000 ALTER TABLE `terminales` DISABLE KEYS */;
+INSERT INTO `terminales` (`TerminalId`, `NombreTerminal`, `CompanyId`) VALUES
+	(74, 'Terminal-Barra', 34),
+	(84, 'Terminal-Caja', 34),
+	(94, 'Terminal-Cocina', 34),
+	(154, 'Caja', 4);
+/*!40000 ALTER TABLE `terminales` ENABLE KEYS */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

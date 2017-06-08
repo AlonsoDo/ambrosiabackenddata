@@ -13,6 +13,8 @@ function CargarDatos(){
     $('#galeriacontainer').show();
     $('#datosempresa').show();
     $('#datosimpresoras').show();
+    $('#datosterminales').show();
+    $('#datosempleados').show();
     
 }
 
@@ -144,7 +146,9 @@ function CacelarEditImpresora(){
         $('#NextImpresora').prop('disabled',false);
     }else{
         $('#NextImpresora').prop('disabled',true);
-    }   
+    }
+    
+    InsertUpdateImpresora = 'Update';
     
 }
 
@@ -215,5 +219,420 @@ function CargarDatosPrevImpresorasBack(data){
 function BorrarImpresora(){
     
     socket.emit('BorrarImpresora',{BufferIdImpresora:BufferIdImpresora});
+    
+}
+
+function CargarDatosTerminales(){    
+    
+    socket.emit('CargarDatosTerminales',{CompanyId:CompanyId});    
+    
+}
+
+function CargarDatosTerminalesBack(data){
+    
+    $('#nombreterminal').val(data.NombreTerminal);
+    BufferIdTerminal = data.TerminalId;
+    BufferNombreTerminal = data.NombreTerminal;
+    NumeroTerminales = data.NumeroTerminales;    
+    
+    $('#NuevaTerminal').prop('disabled',false);
+    $('#BorrarTerminal').prop('disabled',false);
+    $('#GuardarTerminal').prop('disabled',true);
+    $('#CacelarEditTerminal').prop('disabled',true);    
+    
+    if (data.NumeroTerminales == 0){               
+        $('#PrevTerminal').prop('disabled',true);
+        BtPrevTerminalState = $('#PrevTerminal').is(':disabled');
+        $('#NextTerminal').prop('disabled',true);
+        BtNextTerminalState = $('#NextTerminal').is(':disabled');                      
+    }else if (data.NumeroTerminales == 1){
+        $('#PrevTerminal').prop('disabled',true);
+        BtPrevTerminalState = $('#PrevTerminal').is(':disabled');
+        $('#NextTerminal').prop('disabled',true);
+        BtNextTerminalState = $('#NextTerminal').is(':disabled');        
+    }else if (data.NumeroTerminales > 1){
+        $('#PrevTerminal').prop('disabled',true);
+        BtPrevTerminalState = $('#PrevTerminal').is(':disabled');
+        $('#NextTerminal').prop('disabled',false);
+        BtNextTerminalState = $('#NextTerminal').is(':disabled');        
+    }
+    
+    $('#terminalesmodal').modal({
+        backdrop:'static',
+        keyboard:false  
+    });
+    
+}
+
+function NuevaTerminal(){
+    
+    //Guardar estado de los botones por si cancel edit
+    BtPrevTerminalState = $('#PrevTerminal').is(':disabled');
+    BtNextTerminalState = $('#NextTerminal').is(':disabled');   
+    
+    InsertUpdateTerminal = 'Inserting';
+    $('#nombreterminal').val('');
+    $('#CacelarEditTerminal').prop('disabled',false);
+    
+    $('#PrevTerminal').prop('disabled',true);
+    $('#NextTerminal').prop('disabled',true);
+    $('#BorrarTerminal').prop('disabled',true);
+    $('#NuevaTerminal').prop('disabled',true);
+    $('#GuardarTerminal').prop('disabled',true);
+    
+}
+
+function GuardarNuevaTerminal(){
+    
+    if ($('#nombreterminal').val()==''){
+        $('#terminalesmodal').modal('hide');
+        UltimoFoco = 'nombreterminal';
+        if (($('#colortitulo').attr('class'))=='modal-header modal-header-info'){
+            $('#colortitulo').toggleClass('modal-header-info modal-header-warning'); 
+        }
+        $('#titulo').text('Atencion!');
+        $('#mensage').text('Debe de introducir un nombre de terminal');
+        $('#dialoginfo').modal({
+            backdrop:'static',
+            keyboard:false  
+        });                    
+        return;
+    }
+    
+    if (InsertUpdateTerminal == 'Inserting') { 
+        socket.emit('GuardarNuevaTerminal',{NombreTerminal:$('#nombreterminal').val(),CompanyId:CompanyId});
+        NumeroTerminales = NumeroTerminales + 1;
+        $('#NextTerminal').prop('disabled',true);
+        if (NumeroTerminales==1){
+            $('#PrevTerminal').prop('disabled',true);
+        }else{
+            $('#PrevTerminal').prop('disabled',false);
+        }
+        $('#NuevaTerminal').prop('disabled',false);
+        $('#BorrarTerminal').prop('disabled',false);        
+        InsertUpdateTerminal = 'Update';
+    }else if (InsertUpdateTerminal == 'Update'){
+        socket.emit('ModificarNombreTerminal',{NombreTerminal:$('#nombreterminal').val(),BufferIdTerminal:BufferIdTerminal});
+    }
+    
+    $('#GuardarTerminal').prop('disabled',true);
+    $('#CacelarEditTerminal').prop('disabled',true);
+    
+}
+
+function CacelarEditTerminal(){
+    
+    $('#nombreterminal').val(BufferNombreTerminal);
+    $('#CacelarEditTerminal').prop('disabled',true);
+    $('#GuardarTerminal').prop('disabled',true);
+    $('#NuevaTerminal').prop('disabled',false);
+    if (NumeroTerminales == 0){        
+        $('#BorrarTerminal').prop('disabled',true);                
+    }else{
+        $('#BorrarTerminal').prop('disabled',false); 
+    }
+    
+    if (!BtPrevTerminalState){
+        $('#PrevTerminal').prop('disabled',false);
+    }else{
+        $('#PrevTerminal').prop('disabled',true);
+    }
+    
+    if (!BtNextTerminalState){
+        $('#NextTerminal').prop('disabled',false);
+    }else{
+        $('#NextTerminal').prop('disabled',true);
+    }
+    
+    InsertUpdateTerminal = 'Update';
+    
+}
+
+function NextTerminal(){
+    
+    socket.emit('NextTerminal',{BufferIdTerminal:BufferIdTerminal,CompanyId:CompanyId});    
+    
+}
+
+function PrevTerminal(){
+    
+    socket.emit('PrevTerminal',{BufferIdTerminal:BufferIdTerminal,CompanyId:CompanyId});    
+    
+}
+
+function CargarDatosNextTerminalesBack(data){
+    
+    $('#nombreterminal').val(data.NombreTerminal);
+    BufferIdTerminal = data.TerminalId;
+    BufferNombreTerminal = data.NombreTerminal;
+    NumeroTerminales = data.NumeroTerminales;
+    
+    $('#NuevaTerminal').prop('disabled',false);
+    $('#GuardarTerminal').prop('disabled',true);
+    $('#CacelarEditTerminal').prop('disabled',true);
+    
+    if (data.NumeroTerminales == 1){               
+        $('#PrevTerminal').prop('disabled',false);
+        BtPrevTerminalState = $('#PrevTerminal').is(':disabled');
+        $('#NextTerminal').prop('disabled',true);
+        BtNextTerminalState = $('#NextTerminal').is(':disabled');                        
+    }else if (data.NumeroTerminales > 1){               
+        $('#PrevTerminal').prop('disabled',false);
+        BtPrevTerminalState = $('#PrevTerminal').is(':disabled');
+        $('#NextTerminal').prop('disabled',false);
+        BtNextTerminalState = $('#NextTerminal').is(':disabled');                        
+    }
+    
+    $('#BorrarTerminal').prop('disabled',false);
+}
+
+function CargarDatosPrevTerminalesBack(data){
+    
+    $('#nombreterminal').val(data.NombreTerminal);
+    BufferIdTerminal = data.TerminalId;
+    BufferNombreTerminal = data.NombreTerminal;
+    NumeroTerminales = data.NumeroTerminales;
+    
+    $('#NuevaTerminal').prop('disabled',false);
+    $('#GuardarTerminal').prop('disabled',true);
+    $('#CacelarEditTerminal').prop('disabled',true);
+    
+    if (data.NumeroTerminales == 1){               
+        $('#PrevTerminal').prop('disabled',true);
+        BtPrevTerminalState = $('#PrevTerminal').is(':disabled');
+        $('#NextTerminal').prop('disabled',false);
+        BtNextTerminalState = $('#NextTerminal').is(':disabled');                        
+    }else if (data.NumeroTerminales > 1){               
+        $('#PrevTerminal').prop('disabled',false);
+        BtPrevTerminalState = $('#PrevTerminal').is(':disabled');
+        $('#NextTerminal').prop('disabled',false);
+        BtNextTerminalState = $('#NextTerminal').is(':disabled');                        
+    } 
+    
+    $('#BorrarTerminal').prop('disabled',false);
+}
+
+function BorrarTerminal(){
+    
+    socket.emit('BorrarTerminal',{BufferIdTerminal:BufferIdTerminal});
+    
+}
+
+function CargarDatosEmpleados(){    
+    
+    socket.emit('CargarDatosEmpleados',{CompanyId:CompanyId});    
+    
+}
+
+function CargarDatosEmpleadosBack(data){
+    
+    $('#nombreempleado').val(data.NombreEmpleado);
+    $('#claveempleado').val(data.ClaveEmpleado);
+    BufferIdEmpleado = data.EmpleadoId;
+    BufferNombreEmpleado = data.NombreEmpleado;
+    BufferClaveEmpleado = data.ClaveEmpleado;
+    NumeroEmpleados = data.NumeroEmpleados;
+    
+    $('#NuevoEmpleado').prop('disabled',false);
+    $('#BorrarEmpleado').prop('disabled',false);
+    $('#GuardarEmpleado').prop('disabled',true);
+    $('#CacelarEditEmpleado').prop('disabled',true);    
+    
+    if (data.NumeroEmpleados == 0){               
+        $('#PrevEmpleado').prop('disabled',true);
+        BtPrevEmpleadoState = $('#PrevEmpleado').is(':disabled');
+        $('#NextEmpleado').prop('disabled',true);
+        BtNextEmpleadoState = $('#NextEmpleado').is(':disabled');                      
+    }else if (data.NumeroEmpleados == 1){
+        $('#PrevEmpleado').prop('disabled',true);
+        BtPrevEmpleadoState = $('#PrevEmpleado').is(':disabled');
+        $('#NextEmpleado').prop('disabled',true);
+        BtNextEmpleadoState = $('#NextEmpleado').is(':disabled');        
+    }else if (data.NumeroEmpleados > 1){
+        $('#PrevEmpleado').prop('disabled',true);
+        BtPrevEmpleadoState = $('#PrevEmpleado').is(':disabled');
+        $('#NextEmpleado').prop('disabled',false);
+        BtNextEmpleadoState = $('#NextEmpleado').is(':disabled');        
+    }
+    
+    $('#empleadosmodal').modal({
+        backdrop:'static',
+        keyboard:false  
+    });
+    
+}
+
+function NuevoEmpleado(){
+    
+    //Guardar estado de los botones por si cancel edit
+    BtPrevEmpleadoState = $('#PrevEmpleado').is(':disabled');
+    BtNextEmpleadoState = $('#NextEmpleado').is(':disabled');   
+    
+    InsertUpdateEmpleado = 'Inserting';
+    $('#nombreempleado').val('');
+    $('#claveempleado').val('');
+    $('#CacelarEditEmpleado').prop('disabled',false);
+    
+    $('#PrevEmpleado').prop('disabled',true);
+    $('#NextEmpleado').prop('disabled',true);
+    $('#BorrarEmpleado').prop('disabled',true);
+    $('#NuevoEmpleado').prop('disabled',true);
+    $('#GuardarEmpleado').prop('disabled',true);
+    
+}
+
+function GuardarNuevoEmpleado(){
+    
+    if ($('#nombreempleado').val()==''){
+        $('#empleadosmodal').modal('hide');
+        UltimoFoco = 'nombreempleado';
+        if (($('#colortitulo').attr('class'))=='modal-header modal-header-info'){
+            $('#colortitulo').toggleClass('modal-header-info modal-header-warning'); 
+        }
+        $('#titulo').text('Atencion!');
+        $('#mensage').text('Debe de introducir un nombre de empleado');
+        $('#dialoginfo').modal({
+            backdrop:'static',
+            keyboard:false  
+        });                    
+        return;
+    }
+    
+    if ($('#claveempleado').val()==''){
+        $('#empleadosmodal').modal('hide');
+        UltimoFoco = 'claveempleado';
+        if (($('#colortitulo').attr('class'))=='modal-header modal-header-info'){
+            $('#colortitulo').toggleClass('modal-header-info modal-header-warning'); 
+        }
+        $('#titulo').text('Atencion!');
+        $('#mensage').text('Debe de introducir una clave de empleado');
+        $('#dialoginfo').modal({
+            backdrop:'static',
+            keyboard:false  
+        });                    
+        return;
+    }
+    
+    if (InsertUpdateEmpleado == 'Inserting') {
+        socket.emit('GuardarNuevoEmpleado',{NombreEmpleado:$('#nombreempleado').val(),ClaveEmpleado:$('#claveempleado').val(),CompanyId:CompanyId});
+        NumeroEmpleados = NumeroEmpleados + 1;
+        $('#NextEmpleado').prop('disabled',true);
+        if (NumeroEmpleados==1){
+            $('#PrevEmpleado').prop('disabled',true);
+        }else{
+            $('#PrevEmpleado').prop('disabled',false);
+        }
+        $('#NuevoEmpleado').prop('disabled',false);
+        $('#BorrarEmpleado').prop('disabled',false);        
+        InsertUpdateEmpleado = 'Update';
+    }else if (InsertUpdateEmpleado == 'Update'){
+        socket.emit('ModificarEmpleado',{NombreEmpleado:$('#nombreempleado').val(),ClaveEmpleado:$('#claveempleado').val(),BufferIdEmpleado:BufferIdEmpleado});
+    }
+    
+    $('#GuardarEmpleado').prop('disabled',true);
+    $('#CacelarEditEmpleado').prop('disabled',true);
+    
+}
+
+function CacelarEditEmpleado(){
+    
+    $('#nombreempleado').val(BufferNombreEmpleado);
+    $('#claveempleado').val(BufferClaveEmpleado);
+    $('#CacelarEditEmpleado').prop('disabled',true);
+    $('#GuardarEmpleado').prop('disabled',true);
+    $('#NuevoEmpleado').prop('disabled',false);
+    if (NumeroEmpleados == 0){        
+        $('#BorrarEmpleado').prop('disabled',true);                
+    }else{
+        $('#BorrarEmpleado').prop('disabled',false); 
+    }
+    
+    if (!BtPrevEmpleadoState){
+        $('#PrevEmpleado').prop('disabled',false);
+    }else{
+        $('#PrevEmpleado').prop('disabled',true);
+    }
+    
+    if (!BtNextEmpleadoState){
+        $('#NextEmpleado').prop('disabled',false);
+    }else{
+        $('#NextEmpleado').prop('disabled',true);
+    }
+    
+    InsertUpdateEmpleado = 'Update';
+    
+}
+
+function NextEmpleado(){
+    
+    socket.emit('NextEmpleado',{BufferIdEmpleado:BufferIdEmpleado,CompanyId:CompanyId});    
+    
+}
+
+function PrevEmpleado(){
+    
+    socket.emit('PrevEmpleado',{BufferIdEmpleado:BufferIdEmpleado,CompanyId:CompanyId});    
+    
+}
+
+function CargarDatosNextEmpleadosBack(data){
+    
+    $('#nombreempleado').val(data.NombreEmpleado);
+    $('#claveempleado').val(data.ClaveEmpleado);
+    BufferIdEmpleado = data.EmpleadoId;
+    BufferNombreEmpleado = data.NombreEmpleado;
+    BufferClaveEmpleado = data.ClaveEmpleado;
+    NumeroEmpleados = data.NumeroEmpleados;
+    
+    $('#NuevoEmpleado').prop('disabled',false);
+    $('#GuardarEmpleado').prop('disabled',true);
+    $('#CacelarEditEmpleado').prop('disabled',true);
+    
+    if (data.NumeroEmpleados == 1){               
+        $('#PrevEmpleado').prop('disabled',false);
+        BtPrevEmpleadoState = $('#PrevEmpleado').is(':disabled');
+        $('#NextEmpleado').prop('disabled',true);
+        BtNextEmpleadoState = $('#NextEmpleado').is(':disabled');                        
+    }else if (data.NumeroEmpleados > 1){               
+        $('#PrevEmpleado').prop('disabled',false);
+        BtPrevEmpleadoState = $('#PrevEmpleado').is(':disabled');
+        $('#NextEmpleado').prop('disabled',false);
+        BtNextEmpleadoState = $('#NextEmpleado').is(':disabled');                        
+    }
+    
+    $('#BorrarEmpleado').prop('disabled',false);
+}
+
+function CargarDatosPrevEmpleadosBack(data){
+    
+    $('#nombreempleado').val(data.NombreEmpleado);
+    $('#claveempleado').val(data.ClaveEmpleado);
+    BufferIdEmpleado = data.EmpleadoId;
+    BufferNombreEmpleado = data.NombreEmpleado;
+    BufferClaveEmpleado = data.ClaveEmpleado;
+    NumeroEmpleados = data.NumeroEmpleados;
+    
+    $('#NuevoEmpleado').prop('disabled',false);
+    $('#GuardarEmpleado').prop('disabled',true);
+    $('#CacelarEditEmpleado').prop('disabled',true);
+    
+    if (data.NumeroEmpleados == 1){               
+        $('#PrevEmpleado').prop('disabled',true);
+        BtPrevEmpleadoState = $('#PrevEmpleado').is(':disabled');
+        $('#NextEmpleado').prop('disabled',false);
+        BtNextEmpleadoState = $('#NextEmpleado').is(':disabled');                        
+    }else if (data.NumeroEmpleados > 1){               
+        $('#PrevEmpleado').prop('disabled',false);
+        BtPrevEmpleadoState = $('#PrevEmpleado').is(':disabled');
+        $('#NextEmpleado').prop('disabled',false);
+        BtNextEmpleadoState = $('#NextEmpleado').is(':disabled');                        
+    }
+    
+    $('#BorrarEmpleado').prop('disabled',false);
+}
+
+function BorrarEmpleado(){
+    
+    socket.emit('BorrarEmpleado',{BufferIdEmpleado:BufferIdEmpleado});
     
 }
