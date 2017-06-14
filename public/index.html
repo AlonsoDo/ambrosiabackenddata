@@ -12,12 +12,54 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     <script src="js/funciones.js" type="text/javascript"></script>
+    <script type="text/javascript" src="js/bootstrap-multiselect.js"></script>
+    <link rel="stylesheet" href="css/bootstrap-multiselect.css" type="text/css"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/2.3.3/css/bootstrap-colorpicker.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/2.3.3/js/bootstrap-colorpicker.min.js"></script>  
+    <script src="js/elementos.js" type="text/javascript"></script>
+    
+    <style type="text/css">
+        #example-selectedClass-container li.multiselect-selected a label {
+            color: red;
+            font-family:Arial,Helvetica,sans-serif;
+            font-weight:bold;
+            font-size:16px;
+        }
+    </style>
+    
+    <style type="text/css">
+        #example-selectedClass-container2 li.multiselect-selected a label {
+            color: red;
+            font-family:Arial,Helvetica,sans-serif;
+            font-weight:bold;
+            font-size:16px;
+        }
+    </style>
+    
+    <style type="text/css">
+        #example-selectedClass-container3 li.multiselect-selected a label {
+            color: red;
+            font-family:Arial,Helvetica,sans-serif;
+            font-weight:bold;
+            font-size:16px;
+        }
+    </style>
+    
+    <style type="text/css">
+        #example-selectedClass-container4 li.multiselect-selected a label {
+            color: red;
+            font-family:Arial,Helvetica,sans-serif;
+            font-weight:bold;
+            font-size:16px;
+        }
+    </style>
     
     <script type="text/javascript">
         
         var socket;
         var UltimoFoco;
         var CompanyId;
+        var CodigoPadre = 0;
         
         var BufferIdImpresora;
         var BufferNombreImpresora;
@@ -56,7 +98,7 @@
             $('#datosempresa').hide();
             $('#datosimpresoras').hide();
             $('#datosterminales').hide();
-            $('#datosempleados').hide();
+            $('#datosempleados').hide();            
             
             $('#login').click(function(){ 
  
@@ -227,7 +269,22 @@
                         backdrop:'static',
                         keyboard:false  
                     });
-                }                
+                }else if (UltimoFoco=='descripcion'){
+                    $('#nuevoelementomodal').modal({
+                        backdrop:'static',
+                        keyboard:false  
+                    });
+                }else if (UltimoFoco=='precio'){
+                    $('#nuevoelementomodal').modal({
+                        backdrop:'static',
+                        keyboard:false  
+                    });
+                }else if (UltimoFoco=='impuesto'){
+                    $('#nuevoelementomodal').modal({
+                        backdrop:'static',
+                        keyboard:false  
+                    });
+                }               
             });
             
             $('#nuevousuariomodal').on('shown.bs.modal',function(){
@@ -677,6 +734,102 @@
                 CargarDatosEmpleados();
                 
             });
+            
+            $('#NuevoElemento').click(function(){                
+                
+                NuevoElemento();                                           
+               
+            });            
+            
+            $('#TipoDeSalida').multiselect({
+                buttonText: function(options, select) {
+                    return 'Tipo de impresion';
+                },
+                buttonTitle: function(options, select) {
+                    var labels = [];
+                    options.each(function () {
+                        labels.push($(this).text());
+                    });
+                    return labels.join(' - ');
+                    //alert(labels[0])
+                },
+                buttonClass: 'btn btn-link btn-lg',
+                buttonContainer: '<div class="btn-group" id="example-selectedClass-container"></div>',
+                selectedClass: 'multiselect-selected'
+            });
+            
+            $('#TipoDeElemento').multiselect({
+                buttonText: function(options, select) {
+                    return 'Tipo de elemento';
+                },
+                buttonTitle: function(options, select) {
+                    var labels = [];
+                    options.each(function () {
+                        labels.push($(this).text());
+                    });
+                    return labels.join(' - ');
+                    //alert(labels[0])
+                },
+                buttonClass: 'btn btn-link btn-lg',
+                buttonContainer: '<div class="btn-group" id="example-selectedClass-container2"></div>',
+                selectedClass: 'multiselect-selected'
+            });
+            
+            $('#ImpresoraDeSalida').multiselect({
+                buttonText: function(options, select) {
+                    return 'Impresora de salida';
+                },
+                buttonTitle: function(options, select) {
+                    var labels = [];
+                    options.each(function () {
+                        labels.push($(this).text());
+                    });
+                    return labels.join(' - ');
+                    //alert(labels[0])
+                },
+                buttonClass: 'btn btn-link btn-lg',
+                buttonContainer: '<div class="btn-group" id="example-selectedClass-container3"></div>',
+                selectedClass: 'multiselect-selected'
+            });
+            
+            $('#TerminalDeSalida').multiselect({
+                buttonText: function(options, select) {
+                    return 'Terminal de salida';
+                },
+                buttonTitle: function(options, select) {
+                    var labels = [];
+                    options.each(function () {
+                        labels.push($(this).text());
+                    });
+                    return labels.join(' - ');
+                    //alert(labels[0])
+                },
+                buttonClass: 'btn btn-link btn-lg',
+                buttonContainer: '<div class="btn-group" id="example-selectedClass-container4"></div>',
+                selectedClass: 'multiselect-selected'
+            });
+            
+            $('#colorfondo').colorpicker({});
+            $('#colorletras').colorpicker({});
+            
+            socket.on('CargarImpresorasDisponiblesBack',function(data){
+                
+                CargarImpresorasDisponiblesBack(data);
+                
+            });
+            
+            socket.on('CargarTerminalesDisponiblesBack',function(data){
+                
+                CargarTerminalesDisponiblesBack(data);
+                
+            });
+            
+            $('#GuardarCambiosElementos').click(function(){                 
+                
+                // Por el momento solo altas
+                GuardarElementoNuevo();
+                
+            });
         
         }); //End jQuery ready function
         
@@ -688,7 +841,7 @@
     <div style="border:6px white solid; width:1100px; height:746px; margin:0 auto 0 auto;">
         <img id="imgloader" class="Loader" src="res/img/imgloader.gif"/>
         <div style="background-color:#e8e8e8; border:0px black solid; width:1094px; height:60px;">
-            <label style="color:black; margin-left:130px; margin-top:10px; float:left; font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:26px;">Bienvenido a Ambros&iacute;a BackEnd Data v0.0.5 por Apolosoft (c) 2017</label>								
+            <label style="color:black; margin-left:130px; margin-top:10px; float:left; font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:26px;">Bienvenido a Ambros&iacute;a BackEnd Data v0.0.7 por Apolosoft (c) 2017</label>								
         </div>
         <div style="background-color:#e8e8e8; border:0px black solid; width:1094px; height:626px; margin-top:6px;">
             <div id="imgcontainer" style="background-color:#e8e8e8; border:6px white solid; width:754px; height:494px; margin-top:64px; margin-left:30px; float:left;">
@@ -708,6 +861,9 @@
                 <a href="#" id="recuperarpassword" style="float:left; margin-left:28px; margin-top:20px; font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:16px;">Recuperar contrase&ntilde;a</a>
             </div>
             <div id="toolsbarcontainer" style="background-color:#e8e8e8; border:6px white solid; width:1070px; height:84px; margin-top:12px; margin-left:12px; float:left;">
+                <button type="button" id="NuevoElemento" class="btn btn-default btn-lg" style="float:right; margin-right:14px; margin-top:14px;">
+                    <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Nuevo
+                </button>
             </div>
             <div id="elementoscontainer" style="background-color:#e8e8e8; border:6px white solid; width:529px; height:506px; margin-top:12px; margin-left:12px; float:left;">
             </div>
@@ -989,6 +1145,89 @@
                         <button type="button" id="CacelarEditEmpleado" class="btn btn-default btn-lg" title="Cancelar"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
                     </div>
                     <button type="button" class="btn btn-primary btn-lg" data-dismiss="modal" title="Salir"><span class="glyphicon glyphicon-share" aria-hidden="true"></span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal  New Element-->
+    <div class="modal fade" id="nuevoelementomodal" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="width:430px;">
+            <div class="modal-content">
+                
+                <!-- Modal Header -->
+                <div class="modal-header modal-header-info">
+                    <button type="button" class="close" data-dismiss="modal">
+                           <span aria-hidden="true">&times;</span>
+                           <span class="sr-only">Close</span>
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">Crear elemento nuevo</h4>
+                </div>
+                
+                <!-- Modal Body -->
+                <div class="modal-body">                    
+                    <form class="form-horizontal" role="form">
+                      <div class="form-group">
+                        <label  class="col-sm-2 control-label" for="desc">Descripcion</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="descripcion" maxlength="100" placeholder="Introducir descripcion del elemento" style="font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:16px;"/>
+                        </div>
+                      </div>                       
+                      <div class="row">
+                        <div class="col-xs-8 form-group">
+                            <label class="col-sm-2 control-label" for="prec" >Precio</label>
+                            <input type="number" pattern="[0-9]+([\.|,][0-9]+)?" formnovalidate required step=".01" class="form-control" id="precio" value="0" style="margin-left:15px; font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:16px;"/>
+                        </div>
+                        <div class="col-xs-4 form-group" style="margin-left:15px;">
+                            <label class="col-sm-2 control-label" for="impuest" >Impuesto</label>
+                            <input type="number" pattern="[0-9]+([\.|,][0-9]+)?" formnovalidate required step=".01" class="form-control" id="impuesto" value="0" style="margin-left:15px; font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:16px;"/>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="btn-group" id="example-selectedClass-container">                        
+                              <select id="TipoDeSalida" multiple="multiple">
+                                <option value="Imprimir en comanda">Imprimir en comanda</option>
+                                <option value="Imprimir en factura">Imprimir en factura</option>                              
+                              </select>                        
+                        </div>
+                        <div class="btn-group" id="example-selectedClass-container2" style="margin-left:13px;">                        
+                              <select id="TipoDeElemento" multiple="multiple">
+                                <option value="Guardar normal">Guardar normal</option>
+                                <option value="Salvar a galeria">Salvar a galeria</option>                              
+                              </select>                        
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="btn-group" id="example-selectedClass-container3">                        
+                              <select id="ImpresoraDeSalida" multiple="multiple">
+                                <option value="Imprimir en comanda">Imprimir en comanda</option>
+                                <option value="Imprimir en factura">Imprimir en factura</option>                              
+                              </select>                        
+                        </div>
+                        <div class="btn-group" id="example-selectedClass-container4">                        
+                              <select id="TerminalDeSalida" multiple="multiple">
+                                <option value="Guardar normal">Guardar normal</option>
+                                <option value="Salvar a galeria">Salvar a galeria</option>                              
+                              </select>                        
+                        </div>
+                      </div>                        
+                      <div class="row">
+                            <div class="col-xs-6 form-group">
+                                <label class="col-sm-2 control-label" for="cf">Color de fondo</label>
+                                <input type="text" class="form-control" id="colorfondo" data-color="#000000" data-color-format="hex" style="margin-left:15px; font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:16px;"/>
+                            </div>
+                            <div class="col-xs-6 form-group" style="margin-left:15px;">
+                                <label class="col-sm-2 control-label" for="ct" >Color del texto</label>
+                                <input type="text" class="form-control" id="colorletras" data-color="#000000" data-color-format="hex" style="margin-left:15px; font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:16px;"/>
+                            </div>
+                      </div>                      
+                    </form>                    
+                </div>
+                
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default btn-lg" data-dismiss="modal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Cerrar</button>
+                    <button type="button" id="GuardarCambiosElementos" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> Guardar cambios</button>
                 </div>
             </div>
         </div>

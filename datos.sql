@@ -10,6 +10,28 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
+-- Volcando estructura para tabla heroku_f5b0ff88b3e8283.elementos
+CREATE TABLE IF NOT EXISTS `elementos` (
+  `ElementoId` int(11) NOT NULL AUTO_INCREMENT,
+  `PadreId` int(11) NOT NULL,
+  `CompanyId` int(11) NOT NULL,
+  `Descripcion` varchar(100) NOT NULL,
+  `Precio` decimal(10,2) NOT NULL,
+  `Impuesto` decimal(10,2) NOT NULL,
+  `ImprimirEnFactura` tinyint(4) NOT NULL,
+  `ImprimirEnComanda` tinyint(4) NOT NULL,
+  `ColorLetras` varchar(7) NOT NULL,
+  `ColorFondo` varchar(7) NOT NULL,
+  `TieneImpresora` tinyint(4) NOT NULL,
+  `TieneTerminal` tinyint(4) NOT NULL,
+  PRIMARY KEY (`ElementoId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Volcando datos para la tabla heroku_f5b0ff88b3e8283.elementos: ~0 rows (aproximadamente)
+/*!40000 ALTER TABLE `elementos` DISABLE KEYS */;
+/*!40000 ALTER TABLE `elementos` ENABLE KEYS */;
+
+
 -- Volcando estructura para tabla heroku_f5b0ff88b3e8283.empleados
 CREATE TABLE IF NOT EXISTS `empleados` (
   `EmpleadoId` int(11) NOT NULL AUTO_INCREMENT,
@@ -19,7 +41,7 @@ CREATE TABLE IF NOT EXISTS `empleados` (
   PRIMARY KEY (`EmpleadoId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=104 DEFAULT CHARSET=utf8;
 
--- Volcando datos para la tabla heroku_f5b0ff88b3e8283.empleados: ~1 rows (aproximadamente)
+-- Volcando datos para la tabla heroku_f5b0ff88b3e8283.empleados: ~5 rows (aproximadamente)
 /*!40000 ALTER TABLE `empleados` DISABLE KEYS */;
 INSERT INTO `empleados` (`EmpleadoId`, `NombreEmpleado`, `ClaveEmpleado`, `CompanyId`) VALUES
 	(34, 'Roberto', '1234', 34),
@@ -36,9 +58,9 @@ CREATE TABLE IF NOT EXISTS `impresoras` (
   `NombreImpresora` varchar(30) NOT NULL,
   `CompanyId` int(11) NOT NULL,
   PRIMARY KEY (`ImpresoraId`)
-) ENGINE=InnoDB AUTO_INCREMENT=294 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=304 DEFAULT CHARSET=utf8;
 
--- Volcando datos para la tabla heroku_f5b0ff88b3e8283.impresoras: ~16 rows (aproximadamente)
+-- Volcando datos para la tabla heroku_f5b0ff88b3e8283.impresoras: ~15 rows (aproximadamente)
 /*!40000 ALTER TABLE `impresoras` DISABLE KEYS */;
 INSERT INTO `impresoras` (`ImpresoraId`, `NombreImpresora`, `CompanyId`) VALUES
 	(74, 'Cocina-Entrantes', 14),
@@ -54,7 +76,8 @@ INSERT INTO `impresoras` (`ImpresoraId`, `NombreImpresora`, `CompanyId`) VALUES
 	(234, 'Barra', 34),
 	(244, 'Cocina', 34),
 	(274, 'Cocina-Primeros', 4),
-	(284, 'Cocina-Segundos', 4);
+	(284, 'Cocina-Segundos', 4),
+	(294, 'Cocina-Postres', 4);
 /*!40000 ALTER TABLE `impresoras` ENABLE KEYS */;
 
 
@@ -71,13 +94,13 @@ CREATE TABLE IF NOT EXISTS `login` (
   `Ciudad` varchar(30) NOT NULL,
   `NIF` varchar(10) NOT NULL,
   `Telefono` varchar(15) NOT NULL,
-  KEY `CompanyId` (`CompanyId`)
+  PRIMARY KEY (`CompanyId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=104 DEFAULT CHARSET=utf8;
 
 -- Volcando datos para la tabla heroku_f5b0ff88b3e8283.login: ~10 rows (aproximadamente)
 /*!40000 ALTER TABLE `login` DISABLE KEYS */;
 INSERT INTO `login` (`CompanyId`, `User`, `Pass`, `Email`, `NombreComercial`, `NombreFiscal`, `Direccion`, `CodigoPostal`, `Ciudad`, `NIF`, `Telefono`) VALUES
-	(4, 'Caspi', '1234', 'alonso_caspi@hotmail.com', 'Restaurante Los Pescadores', 'Bahia S.L.', 'Playa del Bajondillo 24', '12345', 'Torrremolinos', '12123123-X', '952445566'),
+	(4, 'Caspi', '1234', 'alonso_caspi@hotmail.com', 'Restaurante Los Pescadores 2', 'Bahia S.L.', 'Playa del Bajondillo 24', '12345', 'Torrremolinos', '12123123-X', '952445566'),
 	(14, 'Sofia2', '1234', 'sofiadominguezbelmonte@gmail.com', 'Heladeria Dolche Gusto', 'Mirar S.A.', 'C/ San Juan 25', '12345', 'La Higuera', '1234567-L', '123123123'),
 	(24, 'CaspiAutentico', '12345678', 'alonso.caspi@gmail.com', 'Taperia La Esquinita', 'GestaSur S.L.', 'C/ Estepona 22', '29555', 'Marbella', '27333444-L', ''),
 	(34, 'Caspi2', '12345', 'alonso_caspi2@hotmail.com', '', '', '', '', '', '', ''),
@@ -98,7 +121,7 @@ CREATE TABLE IF NOT EXISTS `terminales` (
   PRIMARY KEY (`TerminalId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=164 DEFAULT CHARSET=utf8;
 
--- Volcando datos para la tabla heroku_f5b0ff88b3e8283.terminales: ~3 rows (aproximadamente)
+-- Volcando datos para la tabla heroku_f5b0ff88b3e8283.terminales: ~4 rows (aproximadamente)
 /*!40000 ALTER TABLE `terminales` DISABLE KEYS */;
 INSERT INTO `terminales` (`TerminalId`, `NombreTerminal`, `CompanyId`) VALUES
 	(74, 'Terminal-Barra', 34),

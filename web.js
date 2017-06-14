@@ -671,5 +671,45 @@ io.sockets.on('connection',function(socket){
         });  
         
     });
+    
+    socket.on('CargarImpresorasDisponibles',function(data){
+        
+        var cQuery;    
+      
+        pool.getConnection(function(err,connection){
+            cQuery = "SELECT * FROM impresoras WHERE CompanyId='"+data.CompanyId+"'";
+            connection.query(cQuery,function(err,rows){
+                if (err){
+                    socket.emit('Error',{Error:err.message});
+                    console.log('Error: ' + err.message);
+                    throw err;                    
+                }else{                     
+                    socket.emit('CargarImpresorasDisponiblesBack',{ImpresorasDisponibles:JSON.stringify(rows)});
+                }                
+            });
+            connection.release();
+        });
+        
+    });
+    
+    socket.on('CargarTerminalesDisponibles',function(data){
+        
+        var cQuery;    
+      
+        pool.getConnection(function(err,connection){
+            cQuery = "SELECT * FROM terminales WHERE CompanyId='"+data.CompanyId+"'";
+            connection.query(cQuery,function(err,rows){
+                if (err){
+                    socket.emit('Error',{Error:err.message});
+                    console.log('Error: ' + err.message);
+                    throw err;                    
+                }else{                     
+                    socket.emit('CargarTerminalesDisponiblesBack',{TerminalesDisponibles:JSON.stringify(rows)});
+                }                
+            });
+            connection.release();
+        });
+        
+    }); 
   
 });
