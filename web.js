@@ -3,14 +3,25 @@ var http = require('http');
 var app = express();
 var server = http.createServer(app);
 
+var async = require('async');
+
 var mysql = require('mysql');
+
 var pool  = mysql.createPool({
-    host     : 'eu-cdbr-west-01.cleardb.com',
-    user     : 'bec9f1dbb65163',
+    host : 'eu-cdbr-west-01.cleardb.com',
+    user : 'bec9f1dbb65163',
     password : '8a687c05', 
     database : 'heroku_f5b0ff88b3e8283',
     connectionLimit : 200
-});
+}); //limit to 10 connectios on free plan
+
+/*var pool  = mysql.createPool({
+    host : '',
+    user : 'root',
+    password : 'charly', 
+    database : 'ambrosia',
+    connectionLimit : 200
+});*/
 
 var io = require('socket.io').listen(server);
 var nodemailer = require('nodemailer');
@@ -710,6 +721,127 @@ io.sockets.on('connection',function(socket){
             connection.release();
         });
         
-    }); 
+    });
+    
+    socket.on('GuardarElemento',function(data){
+        
+        console.log(data.CodigoPadre);
+                
+        var i;        
+        var cQuery;
+        var cQuery2;
+        var cQuery3;
+        var ElementoId;
+      
+        pool.getConnection(function(err,connection){
+            
+            cQuery = "INSERT INTO elementos(PadreId,CompanyId,Descripcion,Precio,Impuesto,ImprimirEnFactura,ImprimirEnComanda,ColorLetras,ColorFondo,TieneImpresora,TieneTerminal) VALUES ('"+data.CodigoPadre+"','"+data.CompanyId+"','"+data.Descripcion+"','"+data.Precio+"','"+data.Impuesto+"','"+data.FlagImprimirEnFactura+"','"+data.FlagImprimirEnComanda+"','"+data.ColorLetras+"','"+data.ColorFondo+"','"+data.ImpresorasSeleccionadas+"','"+data.TerminalesSeleccionadas+"')";     
+            
+            connection.query(cQuery,function(err,rows){
+                if (err){
+                    
+                    socket.emit('Error',{Error:err.message});
+                    console.log('Error: ' + err.message);
+                    throw err;
+                
+                }else{                    
+                    
+                    ElementoId = rows.insertId;
+                    
+                    socket.emit('GuardarElementoBack',{ElementoId:ElementoId,ComoGuardarElemento:data.ComoGuardarElemento});
+                    
+                    var values = [];
+                    
+                    for (var j = 0 ; j < data.aImpresorasSeleccionadas.length ; j++){                        
+                        values.push([ElementoId,data.aImpresorasSeleccionadas[j]]);                    
+                    }                
+                        
+                    if (values.length > 0){                    
+                        pool.getConnection(function(err,connection){
+                            cQuery2 = "INSERT INTO impresoraconfig ( ElementoId , NombreImpresora ) VALUES ?";     
+                            connection.query(cQuery2,[values],function(err){
+                                if (err){
+                                    socket.emit('Error',{Error:err.message});
+                                    console.log('Error: ' + err.message);
+                                    throw err;
+                                }else{                                     
+                                    
+                                }
+                                connection.release();
+                            });                            
+                        });
+                    }
+                    
+                }
+                    
+                var values2 = [];
+                    
+                for (var j = 0 ; j < data.aTerminalesSeleccionadas.length ; j++){                        
+                    values.push([ElementoId,data.aTerminalesSeleccionadas[j]]);                    
+                }                
+                        
+                if (values2.length > 0){
+                    pool.getConnection(function(err,connection){
+                        cQuery3 = "INSERT INTO terminalconfig ( ElementoId , NombreTerminal ) VALUES ?";     
+                        connection.query(cQuery3,[values],function(err){
+                            if (err){
+                                socket.emit('Error',{Error:err.message});
+                                console.log('Error: ' + err.message);
+                                throw err;
+                            }else{                                     
+                                
+                            }
+                            connection.release();
+                        });                            
+                    });
+                }
+                
+            });
+            connection.release();        
+        });        
+        
+    });
+    
+    socket.on('CargarDatosElementos',function(data){
+        
+        var cQuery;    
+      
+        pool.getConnection(function(err,connection){
+            cQuery = "SELECT * FROM elementos WHERE CompanyId='"+data.CompanyId+"' AND PadreId='"+data.CodigoPadre+"'";
+            connection.query(cQuery,function(err,rows){
+                if (err){
+                    socket.emit('Error',{Error:err.message});
+                    console.log('Error: ' + err.message);
+                    throw err;                    
+                }else{                     
+                    socket.emit('CargarDatosElementosBack',{Elementos:JSON.stringify(rows),TipoElemento:data.TipoElemento});
+                }                
+            });
+            connection.release();
+        });
+        
+    });
+    
+    socket.on('BorrarElemento',function(data){
+        
+        console.log(data.CodigoElementoSeleccionado);        
+        
+        var cQuery;    
+      
+        pool.getConnection(function(err,connection){
+            cQuery = "DELETE FROM elementos WHERE ElementoId='"+data.CodigoElementoSeleccionado+"'";
+            connection.query(cQuery,function(err,rows){
+                if (err){
+                    socket.emit('Error',{Error:err.message});
+                    console.log('Error: ' + err.message);
+                    throw err;                    
+                }else{                     
+                    
+                }                
+            });
+            connection.release();
+        });        
+        
+    });    
   
 });

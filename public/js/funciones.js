@@ -16,6 +16,9 @@ function CargarDatos(){
     $('#datosterminales').show();
     $('#datosempleados').show();
     
+    socket.emit('CargarDatosElementos',{CompanyId:CompanyId,CodigoPadre:CodigoPadre,TipoElemento:'Normal'});
+    socket.emit('CargarDatosElementos',{CompanyId:CompanyId,CodigoPadre:CodigoPadre2,TipoElemento:'Galeria'});
+    
 }
 
 function GuardarDatosEmpresa(CompanyId,NombreComercial,NombreFiscal,Direccion,CodigoPostal,Ciudad,NIF,Telefono){
@@ -26,13 +29,17 @@ function GuardarDatosEmpresa(CompanyId,NombreComercial,NombreFiscal,Direccion,Co
     
 }
 
-function CargarDatosImpresoras(){    
+function CargarDatosImpresoras(){
+    
+    $('#imgloader').show();
     
     socket.emit('CargarDatosImpresoras',{CompanyId:CompanyId});    
     
 }
 
 function CargarDatosImpresorasBack(data){
+    
+    $('#imgloader').hide();
     
     $('#nombreimpresora').val(data.NombreImpresora);
     BufferIdImpresora = data.ImpresoraId;
@@ -122,6 +129,8 @@ function GuardarNuevaImpresora(){
     $('#GuardarImpresora').prop('disabled',true);
     $('#CacelarEditImpresora').prop('disabled',true);
     
+    $('#imgloader').show();
+    
 }
 
 function CacelarEditImpresora(){
@@ -154,11 +163,15 @@ function CacelarEditImpresora(){
 
 function NextImpresora(){
     
+    $('#imgloader').show();
+    
     socket.emit('NextImpresora',{BufferIdImpresora:BufferIdImpresora,CompanyId:CompanyId});    
     
 }
 
 function PrevImpresora(){
+    
+    $('#imgloader').show();
     
     socket.emit('PrevImpresora',{BufferIdImpresora:BufferIdImpresora,CompanyId:CompanyId});    
     
@@ -188,6 +201,8 @@ function CargarDatosNextImpresorasBack(data){
     }
     
     $('#BorrarImpresora').prop('disabled',false);
+    
+    $('#imgloader').hide();
 }
 
 function CargarDatosPrevImpresorasBack(data){
@@ -214,21 +229,29 @@ function CargarDatosPrevImpresorasBack(data){
     } 
     
     $('#BorrarImpresora').prop('disabled',false);
+    
+    $('#imgloader').hide();
 }
 
 function BorrarImpresora(){
+    
+    $('#imgloader').show();
     
     socket.emit('BorrarImpresora',{BufferIdImpresora:BufferIdImpresora});
     
 }
 
-function CargarDatosTerminales(){    
+function CargarDatosTerminales(){
+    
+    $('#imgloader').show();
     
     socket.emit('CargarDatosTerminales',{CompanyId:CompanyId});    
     
 }
 
 function CargarDatosTerminalesBack(data){
+    
+    $('#imgloader').hide();
     
     $('#nombreterminal').val(data.NombreTerminal);
     BufferIdTerminal = data.TerminalId;
@@ -318,6 +341,8 @@ function GuardarNuevaTerminal(){
     $('#GuardarTerminal').prop('disabled',true);
     $('#CacelarEditTerminal').prop('disabled',true);
     
+    $('#imgloader').show();
+    
 }
 
 function CacelarEditTerminal(){
@@ -350,11 +375,15 @@ function CacelarEditTerminal(){
 
 function NextTerminal(){
     
+    $('#imgloader').show();
+    
     socket.emit('NextTerminal',{BufferIdTerminal:BufferIdTerminal,CompanyId:CompanyId});    
     
 }
 
 function PrevTerminal(){
+    
+    $('#imgloader').show();
     
     socket.emit('PrevTerminal',{BufferIdTerminal:BufferIdTerminal,CompanyId:CompanyId});    
     
@@ -384,6 +413,8 @@ function CargarDatosNextTerminalesBack(data){
     }
     
     $('#BorrarTerminal').prop('disabled',false);
+    
+    $('#imgloader').hide();
 }
 
 function CargarDatosPrevTerminalesBack(data){
@@ -410,21 +441,29 @@ function CargarDatosPrevTerminalesBack(data){
     } 
     
     $('#BorrarTerminal').prop('disabled',false);
+    
+    $('#imgloader').hide();
 }
 
 function BorrarTerminal(){
+    
+    $('#imgloader').show();
     
     socket.emit('BorrarTerminal',{BufferIdTerminal:BufferIdTerminal});
     
 }
 
-function CargarDatosEmpleados(){    
+function CargarDatosEmpleados(){
+    
+    $('#imgloader').show();
     
     socket.emit('CargarDatosEmpleados',{CompanyId:CompanyId});    
     
 }
 
 function CargarDatosEmpleadosBack(data){
+    
+    $('#imgloader').hide();
     
     $('#nombreempleado').val(data.NombreEmpleado);
     $('#claveempleado').val(data.ClaveEmpleado);
@@ -532,6 +571,8 @@ function GuardarNuevoEmpleado(){
     $('#GuardarEmpleado').prop('disabled',true);
     $('#CacelarEditEmpleado').prop('disabled',true);
     
+    $('#imgloader').show();
+    
 }
 
 function CacelarEditEmpleado(){
@@ -565,17 +606,23 @@ function CacelarEditEmpleado(){
 
 function NextEmpleado(){
     
+    $('#imgloader').show();
+    
     socket.emit('NextEmpleado',{BufferIdEmpleado:BufferIdEmpleado,CompanyId:CompanyId});    
     
 }
 
 function PrevEmpleado(){
     
+    $('#imgloader').show();
+    
     socket.emit('PrevEmpleado',{BufferIdEmpleado:BufferIdEmpleado,CompanyId:CompanyId});    
     
 }
 
 function CargarDatosNextEmpleadosBack(data){
+    
+    $('#imgloader').hide();
     
     $('#nombreempleado').val(data.NombreEmpleado);
     $('#claveempleado').val(data.ClaveEmpleado);
@@ -605,6 +652,8 @@ function CargarDatosNextEmpleadosBack(data){
 
 function CargarDatosPrevEmpleadosBack(data){
     
+    $('#imgloader').hide();
+    
     $('#nombreempleado').val(data.NombreEmpleado);
     $('#claveempleado').val(data.ClaveEmpleado);
     BufferIdEmpleado = data.EmpleadoId;
@@ -632,6 +681,8 @@ function CargarDatosPrevEmpleadosBack(data){
 }
 
 function BorrarEmpleado(){
+    
+    $('#imgloader').show();
     
     socket.emit('BorrarEmpleado',{BufferIdEmpleado:BufferIdEmpleado});
     

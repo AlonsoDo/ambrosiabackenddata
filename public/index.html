@@ -60,6 +60,7 @@
         var UltimoFoco;
         var CompanyId;
         var CodigoPadre = 0;
+        var CodigoPadre2 = -1;
         
         var BufferIdImpresora;
         var BufferNombreImpresora;
@@ -98,7 +99,9 @@
             $('#datosempresa').hide();
             $('#datosimpresoras').hide();
             $('#datosterminales').hide();
-            $('#datosempleados').hide();            
+            $('#datosempleados').hide();
+            
+            $('#BorrarElemento').prop('disabled',true);
             
             $('#login').click(function(){ 
  
@@ -284,7 +287,17 @@
                         backdrop:'static',
                         keyboard:false  
                     });
-                }               
+                }else if (UltimoFoco=='colorfondo'){
+                    $('#nuevoelementomodal').modal({
+                        backdrop:'static',
+                        keyboard:false  
+                    });
+                }else if (UltimoFoco=='colorletras'){
+                    $('#nuevoelementomodal').modal({
+                        backdrop:'static',
+                        keyboard:false  
+                    });
+                }                
             });
             
             $('#nuevousuariomodal').on('shown.bs.modal',function(){
@@ -750,8 +763,7 @@
                     options.each(function () {
                         labels.push($(this).text());
                     });
-                    return labels.join(' - ');
-                    //alert(labels[0])
+                    return labels.join(' - ');                    
                 },
                 buttonClass: 'btn btn-link btn-lg',
                 buttonContainer: '<div class="btn-group" id="example-selectedClass-container"></div>',
@@ -809,8 +821,8 @@
                 selectedClass: 'multiselect-selected'
             });
             
-            $('#colorfondo').colorpicker({});
-            $('#colorletras').colorpicker({});
+            $('#colorfondo').colorpicker({format:'hex'});
+            $('#colorletras').colorpicker({format:'hex'});
             
             socket.on('CargarImpresorasDisponiblesBack',function(data){
                 
@@ -830,6 +842,25 @@
                 GuardarElementoNuevo();
                 
             });
+            
+            socket.on('GuardarElementoBack',function(data){
+                
+                CrearElementoEnConteiner(data.ElementoId,data.ComoGuardarElemento);                
+                
+            });
+            
+            socket.on('CargarDatosElementosBack',function(data){
+                
+                CargarDatosElementosBack(data);
+                
+            });
+            
+            $('#BorrarElemento').click(function(){                 
+                
+               BorrarElemento();
+                
+            });
+            
         
         }); //End jQuery ready function
         
@@ -841,7 +872,7 @@
     <div style="border:6px white solid; width:1100px; height:746px; margin:0 auto 0 auto;">
         <img id="imgloader" class="Loader" src="res/img/imgloader.gif"/>
         <div style="background-color:#e8e8e8; border:0px black solid; width:1094px; height:60px;">
-            <label style="color:black; margin-left:130px; margin-top:10px; float:left; font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:26px;">Bienvenido a Ambros&iacute;a BackEnd Data v0.0.7 por Apolosoft (c) 2017</label>								
+            <label style="color:black; margin-left:130px; margin-top:10px; float:left; font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:26px;">Bienvenido a Ambros&iacute;a BackEnd Data v0.1.0 por Apolosoft (c) 2017</label>								
         </div>
         <div style="background-color:#e8e8e8; border:0px black solid; width:1094px; height:626px; margin-top:6px;">
             <div id="imgcontainer" style="background-color:#e8e8e8; border:6px white solid; width:754px; height:494px; margin-top:64px; margin-left:30px; float:left;">
@@ -864,10 +895,13 @@
                 <button type="button" id="NuevoElemento" class="btn btn-default btn-lg" style="float:right; margin-right:14px; margin-top:14px;">
                     <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Nuevo
                 </button>
+                <button type="button" id="BorrarElemento" class="btn btn-default btn-lg" style="float:right; margin-right:14px; margin-top:14px;">
+                    <span class="glyphicon glyphicon-minus-sign" aria-hidden="true"></span> Borrar
+                </button>
             </div>
-            <div id="elementoscontainer" style="background-color:#e8e8e8; border:6px white solid; width:529px; height:506px; margin-top:12px; margin-left:12px; float:left;">
+            <div id="elementoscontainer" style="background-color:#e8e8e8; border:6px white solid; width:529px; height:506px; margin-top:12px; margin-left:12px; float:left; position:relative; overflow-x:hidden; overflow-y:scroll;">
             </div>
-            <div id="galeriacontainer" style="background-color:#e8e8e8; border:6px white solid; width:529px; height:506px; margin-top:12px; margin-left:12px; float:left;">
+            <div id="galeriacontainer" style="background-color:#e8e8e8; border:6px white solid; width:529px; height:506px; margin-top:12px; margin-left:12px; float:left; position:relative; overflow-x:hidden; overflow-y:scroll;">
             </div>
         </div>
         <div style="background-color:#e8e8e8; border:0px black solid; width:1094px; height:40px; margin-top:6px;">
@@ -1186,14 +1220,14 @@
                       <div class="row">
                         <div class="btn-group" id="example-selectedClass-container">                        
                               <select id="TipoDeSalida" multiple="multiple">
-                                <option value="Imprimir en comanda">Imprimir en comanda</option>
-                                <option value="Imprimir en factura">Imprimir en factura</option>                              
+                                <option id="imprimirencomanda" value="Imprimir en comanda">Imprimir en comanda</option>
+                                <option id="imprimirenfactura" value="Imprimir en factura">Imprimir en factura</option>                              
                               </select>                        
                         </div>
                         <div class="btn-group" id="example-selectedClass-container2" style="margin-left:13px;">                        
                               <select id="TipoDeElemento" multiple="multiple">
-                                <option value="Guardar normal">Guardar normal</option>
-                                <option value="Salvar a galeria">Salvar a galeria</option>                              
+                                <option id="guardarelemento" value="Guardar normal">Guardar normal</option>
+                                <option id="salvaragaleria" value="Salvar a galeria">Salvar a galeria</option>                              
                               </select>                        
                         </div>
                       </div>

@@ -96,3 +96,21 @@
     margin-left: 15px;
 }
 
+.botoneselementos{  
+  border: 2px solid #777;
+  border-radius: 8px;
+  outline: none;
+  background-color: #ff9000;
+  height: 52px;
+  width: 220px;
+  float: left;
+  font-size: 18px;
+  font-weight: bold;
+  font-family: Arial,Helvetica,sans-serif;
+  margin-top: 16px;
+  margin-left: 16px;
+}
+
+.borderClass{
+    border:5px solid red;
+}
