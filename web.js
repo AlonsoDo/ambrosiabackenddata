@@ -777,13 +777,13 @@ io.sockets.on('connection',function(socket){
                 var values2 = [];
                     
                 for (var j = 0 ; j < data.aTerminalesSeleccionadas.length ; j++){                        
-                    values.push([ElementoId,data.aTerminalesSeleccionadas[j]]);                    
+                    values2.push([ElementoId,data.aTerminalesSeleccionadas[j]]);                    
                 }                
                         
                 if (values2.length > 0){
                     pool.getConnection(function(err,connection){
                         cQuery3 = "INSERT INTO terminalconfig ( ElementoId , NombreTerminal ) VALUES ?";     
-                        connection.query(cQuery3,[values],function(err){
+                        connection.query(cQuery3,[values2],function(err){
                             if (err){
                                 socket.emit('Error',{Error:err.message});
                                 console.log('Error: ' + err.message);
@@ -841,6 +841,241 @@ io.sockets.on('connection',function(socket){
             });
             connection.release();
         });        
+        
+    });
+    
+    socket.on('EditarElemento',function(data){
+        
+        console.log(data.CodigoElementoSeleccionado);
+        
+        var cQuery;    
+      
+        pool.getConnection(function(err,connection){
+            cQuery = "SELECT * FROM elementos WHERE ElementoId='"+data.CodigoElementoSeleccionado+"'";
+            connection.query(cQuery,function(err,rows){
+                if (err){
+                    socket.emit('Error',{Error:err.message});
+                    console.log('Error: ' + err.message);
+                    throw err;                    
+                }else{                     
+                    socket.emit('CargarDatosElementoBack',{DatosElemento:JSON.stringify(rows)});
+                }                
+            });
+            connection.release();
+        });
+        
+    });
+    
+    socket.on('CargarImpresoras',function(data){
+        
+        async.series([
+            function(callback) {
+                // do some stuff ...
+                console.log(data.CompanyId)
+                var cQuery;       
+                pool.getConnection(function(err,connection){
+                    cQuery = "SELECT * FROM impresoras WHERE CompanyId='"+data.CompanyId+"'";
+                    connection.query(cQuery,function(err,rows){
+                        if (err){
+                            socket.emit('Error',{Error:err.message});
+                            console.log('Error: ' + err.message);
+                            throw err;                    
+                        }else{                     
+                            socket.emit('CargarImpresorasDisponiblesBack',{ImpresorasDisponibles:JSON.stringify(rows)});
+                        }                
+                    });
+                    connection.release();
+                });
+                callback(null, 'one');
+            },
+            function(callback) {
+                // do some more stuff ...
+                console.log(data.CodigoElementoSeleccionado)
+                var cQuery;       
+                pool.getConnection(function(err,connection){
+                    cQuery = "SELECT * FROM impresoraconfig WHERE ElementoId='"+data.CodigoElementoSeleccionado+"'";
+                    connection.query(cQuery,function(err,rows){
+                        if (err){
+                            socket.emit('Error',{Error:err.message});
+                            console.log('Error: ' + err.message);
+                            throw err;                    
+                        }else{                     
+                            socket.emit('CargarImpresorasConfigBack',{ImpresorasConfig:JSON.stringify(rows)});
+                        }                
+                    });
+                    connection.release();
+                });
+                callback(null, 'two');
+            }
+        ],
+        // optional callback
+        function(err, results) {
+            // results is now equal to ['one', 'two']
+            console.log(err);
+        });
+        
+    });
+    
+    socket.on('CargarTerminales',function(data){
+        
+        async.series([
+            function(callback) {
+                // do some stuff ...
+                console.log(data.CompanyId)
+                var cQuery;       
+                pool.getConnection(function(err,connection){
+                    cQuery = "SELECT * FROM terminales WHERE CompanyId='"+data.CompanyId+"'";
+                    connection.query(cQuery,function(err,rows){
+                        if (err){
+                            socket.emit('Error',{Error:err.message});
+                            console.log('Error: ' + err.message);
+                            throw err;                    
+                        }else{                     
+                            socket.emit('CargarTerminalesDisponiblesBack',{TerminalesDisponibles:JSON.stringify(rows)});
+                        }                
+                    });
+                    connection.release();
+                });
+                callback(null, 'one');
+            },
+            function(callback) {
+                // do some more stuff ...
+                console.log(data.CodigoElementoSeleccionado)
+                var cQuery;       
+                pool.getConnection(function(err,connection){
+                    cQuery = "SELECT * FROM terminalconfig WHERE ElementoId='"+data.CodigoElementoSeleccionado+"'";
+                    connection.query(cQuery,function(err,rows){
+                        if (err){
+                            socket.emit('Error',{Error:err.message});
+                            console.log('Error: ' + err.message);
+                            throw err;                    
+                        }else{                     
+                            socket.emit('CargarTerminalesConfigBack',{TerminalesConfig:JSON.stringify(rows)});
+                        }                
+                    });
+                    connection.release();
+                });
+                callback(null, 'two');
+            }
+        ],
+        // optional callback
+        function(err, results) {
+            // results is now equal to ['one', 'two']
+            console.log(err);
+        });
+        
+    });
+    
+    socket.on('ActualizarElemento',function(data){
+        
+        console.log('Codigo: '+data.CodigoElementoSeleccionado);
+        
+        async.series([
+            function(callback) {
+                // Borrar impresoras config ...
+                var cQuery;      
+                pool.getConnection(function(err,connection){
+                    cQuery = "DELETE FROM impresoraconfig WHERE ElementoId='"+data.CodigoElementoSeleccionado+"'";
+                    connection.query(cQuery,function(err,rows){
+                        if (err){
+                            socket.emit('Error',{Error:err.message});
+                            console.log('Error: ' + err.message);
+                            throw err;                    
+                        }else{                            
+                        }                
+                    });
+                    connection.release();
+                });
+                callback(null, '1');
+            },
+            function(callback) {
+                // Borrar terminales config ...
+                var cQuery;      
+                pool.getConnection(function(err,connection){
+                    cQuery = "DELETE FROM terminalconfig WHERE ElementoId='"+data.CodigoElementoSeleccionado+"'";
+                    connection.query(cQuery,function(err,rows){
+                        if (err){
+                            socket.emit('Error',{Error:err.message});
+                            console.log('Error: ' + err.message);
+                            throw err;                    
+                        }else{                            
+                        }                
+                    });
+                    connection.release();
+                });
+                callback(null, '2');
+            },
+            function(callback) {
+                // Actualizar registro elemento ...                
+                var cQuery;      
+                pool.getConnection(function(err,connection){
+                    cQuery = "UPDATE elementos SET Descripcion='" + data.Descripcion + "' , Precio='" + data.Precio + "' , Impuesto='" + data.Impuesto + "' , ImprimirEnFactura='" + data.FlagImprimirEnFactura + "' , ImprimirEnComanda='" + data.FlagImprimirEnComanda + "' , ColorLetras='" + data.ColorLetras + "' , ColorFondo='" + data.ColorFondo + "' , TieneImpresora='" + data.ImpresorasSeleccionadas + "' , TieneTerminal='" + data.TerminalesSeleccionadas + "' WHERE ElementoId='"+data.CodigoElementoSeleccionado+"'";
+                    connection.query(cQuery,function(err,rows){
+                        if (err){
+                            socket.emit('Error',{Error:err.message});
+                            console.log('Error: ' + err.message);
+                            throw err;                    
+                        }else{                            
+                        }                
+                    });
+                    connection.release();
+                });                
+                callback(null, '3');
+            },
+            function(callback) {
+                // Grabar impresoras config ...
+                var values = [];
+                var cQuery;    
+                for (var j = 0 ; j < data.aImpresorasSeleccionadas.length ; j++){                        
+                    values.push([data.CodigoElementoSeleccionado,data.aImpresorasSeleccionadas[j]]);                    
+                }                        
+                if (values.length > 0){                    
+                    pool.getConnection(function(err,connection){
+                        cQuery = "INSERT INTO impresoraconfig ( ElementoId , NombreImpresora ) VALUES ?";     
+                        connection.query(cQuery,[values],function(err){
+                            if (err){
+                                socket.emit('Error',{Error:err.message});
+                                console.log('Error: ' + err.message);
+                                throw err;
+                            }else{                                     
+                            }
+                            connection.release();
+                        });                            
+                    });
+                }
+                callback(null, '4');
+            },
+            function(callback) {
+                // Grabar terminales config ...
+                var values = [];
+                var cQuery;    
+                for (var j = 0 ; j < data.aTerminalesSeleccionadas.length ; j++){                        
+                    values.push([data.CodigoElementoSeleccionado,data.aTerminalesSeleccionadas[j]]);                    
+                }                        
+                if (values.length > 0){                    
+                    pool.getConnection(function(err,connection){
+                        cQuery = "INSERT INTO terminalconfig ( ElementoId , NombreTerminal ) VALUES ?";     
+                        connection.query(cQuery,[values],function(err){
+                            if (err){
+                                socket.emit('Error',{Error:err.message});
+                                console.log('Error: ' + err.message);
+                                throw err;
+                            }else{                                     
+                            }
+                            connection.release();
+                        });                            
+                    });
+                }
+                callback(null, '5');
+            }
+        ],
+        // optional callback
+        function(err, results) {
+            // results is now equal to ['1','2','3','4','5']
+            console.log(err);
+        });
+        
+        
         
     });    
   

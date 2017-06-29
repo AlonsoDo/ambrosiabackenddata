@@ -102,6 +102,7 @@
             $('#datosempleados').hide();
             
             $('#BorrarElemento').prop('disabled',true);
+            $('#EditarElemento').prop('disabled',true);
             
             $('#login').click(function(){ 
  
@@ -293,6 +294,11 @@
                         keyboard:false  
                     });
                 }else if (UltimoFoco=='colorletras'){
+                    $('#nuevoelementomodal').modal({
+                        backdrop:'static',
+                        keyboard:false  
+                    });
+                }else if (UltimoFoco=='TipoDeElemento'){
                     $('#nuevoelementomodal').modal({
                         backdrop:'static',
                         keyboard:false  
@@ -497,7 +503,8 @@
             
             socket.on('GuardarNuevaImpresoraBack',function(data){
                 
-                BufferIdImpresora = data.ImpresoraId;                    
+                BufferIdImpresora = data.ImpresoraId;
+                $('#imgloader').hide();
                 
             });
             
@@ -593,7 +600,8 @@
             
             socket.on('GuardarNuevaTerminalBack',function(data){
                 
-                BufferIdTerminal = data.TerminalId;                    
+                BufferIdTerminal = data.TerminalId;
+                $('#imgloader').hide();
                 
             });
             
@@ -750,9 +758,29 @@
             
             $('#NuevoElemento').click(function(){                
                 
+                EstadoElemento = 'Inserting';
                 NuevoElemento();                                           
                
-            });            
+            });       
+            
+            $('#nuevoelementomodal').on('shown.bs.modal',function(){
+                
+                if (UltimoFoco=='descripcion'){
+                    $('#descripcion').focus();
+                }else if (UltimoFoco=='precio'){
+                    $('#precio').focus();
+                }else if (UltimoFoco=='impuesto'){
+                    $('#impuesto').focus();
+                }else if (UltimoFoco=='TipoDeElemento'){
+                    //$('#TipoDeElemento').click();
+                }else if (UltimoFoco=='colorfondo'){
+                    $('#colorfondo').focus();
+                }else if (UltimoFoco=='colorletras'){
+                    $('#colorletras').focus();
+                }
+                //$("#TipoDeSalida").multiselect("refresh");
+                
+            });       
             
             $('#TipoDeSalida').multiselect({
                 buttonText: function(options, select) {
@@ -838,7 +866,6 @@
             
             $('#GuardarCambiosElementos').click(function(){                 
                 
-                // Por el momento solo altas
                 GuardarElementoNuevo();
                 
             });
@@ -861,6 +888,30 @@
                 
             });
             
+            $('#EditarElemento').click(function(){
+                
+                EstadoElemento = 'Updating';
+                EditarElemento();               
+               
+            });
+            
+            socket.on('CargarDatosElementoBack',function(data){
+                
+                CargarDatosElementoBack(data);
+                
+            });
+            
+            socket.on('CargarImpresorasConfigBack',function(data){
+            
+                CargarImpresorasConfigBack(data);
+                
+            });
+            
+            socket.on('CargarTerminalesConfigBack',function(data){
+            
+                CargarTerminalesConfigBack(data);
+                
+            });
         
         }); //End jQuery ready function
         
@@ -872,7 +923,7 @@
     <div style="border:6px white solid; width:1100px; height:746px; margin:0 auto 0 auto;">
         <img id="imgloader" class="Loader" src="res/img/imgloader.gif"/>
         <div style="background-color:#e8e8e8; border:0px black solid; width:1094px; height:60px;">
-            <label style="color:black; margin-left:130px; margin-top:10px; float:left; font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:26px;">Bienvenido a Ambros&iacute;a BackEnd Data v0.1.0 por Apolosoft (c) 2017</label>								
+            <label style="color:black; margin-left:130px; margin-top:10px; float:left; font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:26px;">Bienvenido a Ambros&iacute;a BackEnd Data v0.1.2 por Apolosoft (c) 2017</label>								
         </div>
         <div style="background-color:#e8e8e8; border:0px black solid; width:1094px; height:626px; margin-top:6px;">
             <div id="imgcontainer" style="background-color:#e8e8e8; border:6px white solid; width:754px; height:494px; margin-top:64px; margin-left:30px; float:left;">
@@ -897,6 +948,15 @@
                 </button>
                 <button type="button" id="BorrarElemento" class="btn btn-default btn-lg" style="float:right; margin-right:14px; margin-top:14px;">
                     <span class="glyphicon glyphicon-minus-sign" aria-hidden="true"></span> Borrar
+                </button>
+                <button type="button" id="EditarElemento" class="btn btn-default btn-lg" style="float:right; margin-right:14px; margin-top:14px;">
+                    <span class="glyphicon glyphicon glyphicon-edit" aria-hidden="true"></span> Editar
+                </button>
+                <button type="button" id="MoverElemento" class="btn btn-default btn-lg" style="float:right; margin-right:14px; margin-top:14px;">
+                    <span class="glyphicon glyphicon glyphicon-move" aria-hidden="true"></span> Mover
+                </button>
+                <button type="button" id="CopiarElemento" class="btn btn-default btn-lg" style="float:right; margin-right:14px; margin-top:14px;">
+                    <span class="glyphicon glyphicon glyphicon-copy" aria-hidden="true"></span> Copiar
                 </button>
             </div>
             <div id="elementoscontainer" style="background-color:#e8e8e8; border:6px white solid; width:529px; height:506px; margin-top:12px; margin-left:12px; float:left; position:relative; overflow-x:hidden; overflow-y:scroll;">
@@ -1195,7 +1255,7 @@
                            <span aria-hidden="true">&times;</span>
                            <span class="sr-only">Close</span>
                     </button>
-                    <h4 class="modal-title" id="myModalLabel">Crear elemento nuevo</h4>
+                    <h4 class="modal-title" id="tituloelemento">Crear elemento nuevo</h4>
                 </div>
                 
                 <!-- Modal Body -->
@@ -1233,15 +1293,11 @@
                       </div>
                       <div class="row">
                         <div class="btn-group" id="example-selectedClass-container3">                        
-                              <select id="ImpresoraDeSalida" multiple="multiple">
-                                <option value="Imprimir en comanda">Imprimir en comanda</option>
-                                <option value="Imprimir en factura">Imprimir en factura</option>                              
+                              <select id="ImpresoraDeSalida" multiple="multiple">                                                             
                               </select>                        
                         </div>
                         <div class="btn-group" id="example-selectedClass-container4">                        
-                              <select id="TerminalDeSalida" multiple="multiple">
-                                <option value="Guardar normal">Guardar normal</option>
-                                <option value="Salvar a galeria">Salvar a galeria</option>                              
+                              <select id="TerminalDeSalida" multiple="multiple">                                                              
                               </select>                        
                         </div>
                       </div>                        

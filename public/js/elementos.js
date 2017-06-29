@@ -2,10 +2,14 @@ var BufferBt;
 var ElementoSeleccionadoId;
 var CodigoElementoSeleccionado;
 var BufferColorFondo = '#000000';
-var BufferColorLetras = '#000000'; 
+var BufferColorLetras = '#000000';
+var EstadoElemento = 'Inserting';
 
 function NuevoElemento(){
     
+    EstadoElemento = 'Inserting';
+    
+    $('#tituloelemento').text('Crear elemento nuevo');
     $('#descripcion').val('');
     $('#precio').val('0');
     $('#impuesto').val('0');
@@ -26,7 +30,7 @@ function CargarImpresorasDisponiblesBack(data){
     for(var j in dataJson){        
         
         $('#ImpresoraDeSalida').append($('<option>',{
-            value: dataJson[j].ImpresoraId,
+            value: dataJson[j].NombreImpresora,
             text: dataJson[j].NombreImpresora
         }));       
         
@@ -45,7 +49,7 @@ function CargarTerminalesDisponiblesBack(data){
     for(var j in dataJson){        
         
         $('#TerminalDeSalida').append($('<option>',{
-            value: dataJson[j].TerminalId,
+            value: dataJson[j].NombreTerminal,
             text: dataJson[j].NombreTerminal
         }));       
         
@@ -60,7 +64,7 @@ function CargarTerminalesDisponiblesBack(data){
     
 }
 
-function GuardarElementoNuevo(){    
+function GuardarElementoNuevo(){
     
     var ImprimirEnComanda = $('#imprimirencomanda').is(':selected');
     var ImprimirEnFactura = $('#imprimirenfactura').is(':selected');
@@ -134,6 +138,23 @@ function GuardarElementoNuevo(){
         });
         UltimoFoco = $('#impuesto').attr('id');
         return
+    }   
+    
+    if (EstadoElemento=='Inserting'){ 
+        if (!GuardarElemento && !SalvarAGaleria){
+            //Mensage
+            if (($('#colortitulo').attr('class'))=='modal-header modal-header-info'){
+                $('#colortitulo').toggleClass('modal-header-info modal-header-warning'); 
+            }                    
+            $('#mensage').text('Debe de introducir al menos un tipo de elemento para crearlo');
+            $('#titulo').text('Atencion!');
+            $('#dialoginfo').modal({
+                backdrop:'static',
+                keyboard:false  
+            });
+            UltimoFoco = 'TipoDeElemento';
+            return
+        }
     }
     
     if ($('#colorfondo').val()==''){
@@ -188,17 +209,23 @@ function GuardarElementoNuevo(){
         TerminalesSeleccionadas = 1;
     }
     
-    //Grabar elemento
-    if (GuardarElemento){
-        socket.emit('GuardarElemento',{ComoGuardarElemento:'Normal',CodigoPadre:CodigoPadre,CompanyId:CompanyId,Descripcion:$('#descripcion').val(),Precio:$('#precio').val(),Impuesto:$('#impuesto').val(),FlagImprimirEnComanda:FlagImprimirEnComanda,FlagImprimirEnFactura:FlagImprimirEnFactura,ColorLetras:$('#colorletras').val(),ColorFondo:$('#colorfondo').val(),ImpresorasSeleccionadas:ImpresorasSeleccionadas,TerminalesSeleccionadas:TerminalesSeleccionadas,aImpresorasSeleccionadas:aImpresorasSeleccionadas,aTerminalesSeleccionadas:aTerminalesSeleccionadas});
-    }
-    
-    if (SalvarAGaleria){
-        socket.emit('GuardarElemento',{ComoGuardarElemento:'Galeria',CodigoPadre:-1,CompanyId:CompanyId,Descripcion:$('#descripcion').val(),Precio:$('#precio').val(),Impuesto:$('#impuesto').val(),FlagImprimirEnComanda:FlagImprimirEnComanda,FlagImprimirEnFactura:FlagImprimirEnFactura,ColorLetras:$('#colorletras').val(),ColorFondo:$('#colorfondo').val(),ImpresorasSeleccionadas:ImpresorasSeleccionadas,TerminalesSeleccionadas:TerminalesSeleccionadas,aImpresorasSeleccionadas:aImpresorasSeleccionadas,aTerminalesSeleccionadas:aTerminalesSeleccionadas});
+    if (EstadoElemento=='Inserting'){    
+        //Grabar elemento nuevo
+        if (GuardarElemento){
+            socket.emit('GuardarElemento',{ComoGuardarElemento:'Normal',CodigoPadre:CodigoPadre,CompanyId:CompanyId,Descripcion:$('#descripcion').val(),Precio:$('#precio').val(),Impuesto:$('#impuesto').val(),FlagImprimirEnComanda:FlagImprimirEnComanda,FlagImprimirEnFactura:FlagImprimirEnFactura,ColorLetras:$('#colorletras').val(),ColorFondo:$('#colorfondo').val(),ImpresorasSeleccionadas:ImpresorasSeleccionadas,TerminalesSeleccionadas:TerminalesSeleccionadas,aImpresorasSeleccionadas:aImpresorasSeleccionadas,aTerminalesSeleccionadas:aTerminalesSeleccionadas});
+        }    
+        if (SalvarAGaleria){
+            socket.emit('GuardarElemento',{ComoGuardarElemento:'Galeria',CodigoPadre:-1,CompanyId:CompanyId,Descripcion:$('#descripcion').val(),Precio:$('#precio').val(),Impuesto:$('#impuesto').val(),FlagImprimirEnComanda:FlagImprimirEnComanda,FlagImprimirEnFactura:FlagImprimirEnFactura,ColorLetras:$('#colorletras').val(),ColorFondo:$('#colorfondo').val(),ImpresorasSeleccionadas:ImpresorasSeleccionadas,TerminalesSeleccionadas:TerminalesSeleccionadas,aImpresorasSeleccionadas:aImpresorasSeleccionadas,aTerminalesSeleccionadas:aTerminalesSeleccionadas});
+        }
+    }else{
+        //Actualizar datos elemento        
+        socket.emit('ActualizarElemento',{CodigoElementoSeleccionado:CodigoElementoSeleccionado,Descripcion:$('#descripcion').val(),Precio:$('#precio').val(),Impuesto:$('#impuesto').val(),FlagImprimirEnComanda:FlagImprimirEnComanda,FlagImprimirEnFactura:FlagImprimirEnFactura,ColorLetras:$('#colorletras').val(),ColorFondo:$('#colorfondo').val(),ImpresorasSeleccionadas:ImpresorasSeleccionadas,TerminalesSeleccionadas:TerminalesSeleccionadas,aImpresorasSeleccionadas:aImpresorasSeleccionadas,aTerminalesSeleccionadas:aTerminalesSeleccionadas});
     }
     
     BufferColorFondo = $('#colorfondo').val();
     BufferColorLetras = $('#colorletras').val();
+    
+    BufferBt.prop('value',$('#descripcion').val());
     
 }
 
@@ -214,6 +241,7 @@ function CrearElementoEnConteiner(ElementoId,ComoGuardarElemento){
                         CodigoElementoSeleccionado = datos.CodigoElemento;                        
                         ElementoSeleccionadoId = this.id;
                         $('#BorrarElemento').prop('disabled',false);
+                        $('#EditarElemento').prop('disabled',false);
                     });
     
     if (ComoGuardarElemento=='Normal') {
@@ -252,7 +280,7 @@ function CargarDatosElementosBack(data){
                         BufferBt = $(this);
                         
                         $('#BorrarElemento').prop('disabled',false);
-                        
+                        $('#EditarElemento').prop('disabled',false);
                     });
         
         if (data.TipoElemento=='Normal') {
@@ -272,5 +300,78 @@ function BorrarElemento(){
     $('#'+ElementoSeleccionadoId).remove();
     $('#BorrarElemento').prop('disabled',true);
     socket.emit('BorrarElemento',{CodigoElementoSeleccionado:CodigoElementoSeleccionado});
+    
+}
+
+function EditarElemento(){
+    
+    $('#EditarElemento').prop('disabled',true);
+    $('#BorrarElemento').prop('disabled',true);
+    socket.emit('EditarElemento',{CodigoElementoSeleccionado:CodigoElementoSeleccionado});
+    
+}
+
+function CargarDatosElementoBack(data){
+    
+    EstadoElemento = 'Updating';
+    
+    $('#descripcion').focus();
+    
+    var dataJson = eval(data.DatosElemento);
+    
+    $('#descripcion').val(dataJson[0].Descripcion);
+    $('#precio').val(dataJson[0].Precio);
+    $('#impuesto').val(dataJson[0].Impuesto);
+    $('#colorfondo').val(dataJson[0].ColorFondo);
+    $('#colorletras').val(dataJson[0].ColorLetras);
+    
+    socket.emit('CargarImpresoras',{CompanyId:CompanyId,CodigoElementoSeleccionado:CodigoElementoSeleccionado});    
+    socket.emit('CargarTerminales',{CompanyId:CompanyId,CodigoElementoSeleccionado:CodigoElementoSeleccionado});    
+    
+    $('#TipoDeSalida').multiselect('deselectAll', true);
+    $('#TipoDeSalida').multiselect('updateButtonText');
+    $("#TipoDeSalida").multiselect("refresh"); 
+    
+    if (dataJson[0].ImprimirEnComanda==1){
+        $('#TipoDeSalida').multiselect('select',['Imprimir en comanda']);             
+    }
+    if (dataJson[0].ImprimirEnFactura==1){        
+        $('#TipoDeSalida').multiselect('select',['Imprimir en factura']);        
+    }    
+    $("#TipoDeSalida").multiselect("refresh");    
+    
+    $('#tituloelemento').text('Modificar datos del elemento');
+    
+    $('#nuevoelementomodal').modal('show');
+    
+}
+
+function CargarImpresorasConfigBack(data){
+    
+    setTimeout(function (){
+    
+        var dataJson = eval(data.ImpresorasConfig);    
+        
+        for(var j in dataJson){        
+            $("#ImpresoraDeSalida option[value='" +  dataJson[j].NombreImpresora + "']").attr("selected",1);        
+        }
+        $('#ImpresoraDeSalida').multiselect('refresh');
+    
+    }, 1000);
+    
+}
+
+function CargarTerminalesConfigBack(data){
+    
+    setTimeout(function (){
+    
+        var dataJson = eval(data.TerminalesConfig);    
+        
+        for(var j in dataJson){        
+            $("#TerminalDeSalida option[value='" +  dataJson[j].NombreTerminal + "']").attr("selected",1);        
+        }
+        $('#TerminalDeSalida').multiselect('refresh');
+    
+    }, 1000);
     
 }

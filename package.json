@@ -1,6 +1,6 @@
 {
   "name": "AmbrosiaBackEndData",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Acceso a datos de Ambrosia",
   "main": "index.html",
   "keywords": [
