@@ -59,8 +59,8 @@
         var socket;
         var UltimoFoco;
         var CompanyId;
-        var CodigoPadre = 0;
-        var CodigoPadre2 = -1;
+        var CodigoPadre = 0;       //elementoscontainer
+        var CodigoPadre2 = -1;    //galeriacontainer
         
         var BufferIdImpresora;
         var BufferNombreImpresora;
@@ -912,6 +912,12 @@
                 CargarTerminalesConfigBack(data);
                 
             });
+            
+            $('#MoverElemento').click(function(){                
+                
+                MoverElemento();                             
+               
+            });
         
         }); //End jQuery ready function
         
@@ -923,7 +929,7 @@
     <div style="border:6px white solid; width:1100px; height:746px; margin:0 auto 0 auto;">
         <img id="imgloader" class="Loader" src="res/img/imgloader.gif"/>
         <div style="background-color:#e8e8e8; border:0px black solid; width:1094px; height:60px;">
-            <label style="color:black; margin-left:130px; margin-top:10px; float:left; font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:26px;">Bienvenido a Ambros&iacute;a BackEnd Data v0.1.2 por Apolosoft (c) 2017</label>								
+            <label style="color:black; margin-left:130px; margin-top:10px; float:left; font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:26px;">Bienvenido a Ambros&iacute;a BackEnd Data v0.1.3 por Apolosoft (c) 2017</label>								
         </div>
         <div style="background-color:#e8e8e8; border:0px black solid; width:1094px; height:626px; margin-top:6px;">
             <div id="imgcontainer" style="background-color:#e8e8e8; border:6px white solid; width:754px; height:494px; margin-top:64px; margin-left:30px; float:left;">

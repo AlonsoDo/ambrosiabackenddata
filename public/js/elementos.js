@@ -4,6 +4,10 @@ var CodigoElementoSeleccionado;
 var BufferColorFondo = '#000000';
 var BufferColorLetras = '#000000';
 var EstadoElemento = 'Inserting';
+var aElementosSeleccionados = [];
+var TipoElementoUltimoSeleccionado;
+var BufferUltimoSeleccionado = 'Normal';
+var NombreContenedor;
 
 function NuevoElemento(){
     
@@ -220,12 +224,11 @@ function GuardarElementoNuevo(){
     }else{
         //Actualizar datos elemento        
         socket.emit('ActualizarElemento',{CodigoElementoSeleccionado:CodigoElementoSeleccionado,Descripcion:$('#descripcion').val(),Precio:$('#precio').val(),Impuesto:$('#impuesto').val(),FlagImprimirEnComanda:FlagImprimirEnComanda,FlagImprimirEnFactura:FlagImprimirEnFactura,ColorLetras:$('#colorletras').val(),ColorFondo:$('#colorfondo').val(),ImpresorasSeleccionadas:ImpresorasSeleccionadas,TerminalesSeleccionadas:TerminalesSeleccionadas,aImpresorasSeleccionadas:aImpresorasSeleccionadas,aTerminalesSeleccionadas:aTerminalesSeleccionadas});
+        BufferBt.prop('value',$('#descripcion').val());
     }
     
     BufferColorFondo = $('#colorfondo').val();
-    BufferColorLetras = $('#colorletras').val();
-    
-    BufferBt.prop('value',$('#descripcion').val());
+    BufferColorLetras = $('#colorletras').val();    
     
 }
 
@@ -236,19 +239,86 @@ function CrearElementoEnConteiner(ElementoId,ComoGuardarElemento){
                     .addClass('botoneselementos')
                     .css('background-color', $('#colorfondo').val())
                     .css('color', $('#colorletras').val())
-                    .bind('click', { CodigoElemento:ElementoId},function(event){
-                        var datos = event.data;
-                        CodigoElementoSeleccionado = datos.CodigoElemento;                        
-                        ElementoSeleccionadoId = this.id;
+                    .bind('click',{ CodigoElemento:ElementoId},function(event){                   
+                        
+                        TipoElementoUltimoSeleccionado = ComoGuardarElemento;
+                        
+                        if (event.ctrlKey) {                            
+                            
+                            $(this).css({"border-color":"#000000","border-width":"5px","border-style":"solid"});
+                            
+                            if (TipoElementoUltimoSeleccionado==BufferUltimoSeleccionado) {                                
+                                aElementosSeleccionados.push(this.id);
+                            }else{                            
+                                BufferBt.css({"border-color":"#777","border-width":"2px","border-style":"solid"});                                                                                          
+                                
+                                var datos = event.data;
+                                CodigoElementoSeleccionado = datos.CodigoElemento;
+                                ElementoSeleccionadoId = this.id;
+                                
+                                var Elemento = $("#" + ElementoSeleccionadoId);
+                
+                                NombreContenedor = Elemento.parent().attr('id');
+                                                        
+                                //BufferBt = $(this);
+                                
+                                for ( var i=0 ; i<aElementosSeleccionados.length ; i++){
+                                    $('#'+aElementosSeleccionados[i]).css({"border-color":"#777","border-width":"2px","border-style":"solid"});
+                                }
+                                
+                                aElementosSeleccionados = [];
+                                aElementosSeleccionados.push(ElementoSeleccionadoId);                                
+                            }                            
+                            
+                        }else{                            
+                        
+                            BufferBt.css({"border-color":"#777","border-width":"2px","border-style":"solid"});                        
+                            $(this).css({"border-color":"#000000","border-width":"5px","border-style":"solid"});                                                                 
+                            
+                            var datos = event.data;
+                            CodigoElementoSeleccionado = datos.CodigoElemento;
+                            ElementoSeleccionadoId = this.id;
+                            
+                            var Elemento = $("#" + ElementoSeleccionadoId);
+                
+                            NombreContenedor = Elemento.parent().attr('id');
+                                                    
+                            //BufferBt = $(this);
+                            
+                            for ( var i=0 ; i<aElementosSeleccionados.length ; i++){
+                                $('#'+aElementosSeleccionados[i]).css({"border-color":"#777","border-width":"2px","border-style":"solid"});
+                            }
+                            
+                            aElementosSeleccionados = [];
+                            aElementosSeleccionados.push(ElementoSeleccionadoId);
+                        
+                        }
+                        
+                        BufferUltimoSeleccionado = ComoGuardarElemento;
+                        
                         $('#BorrarElemento').prop('disabled',false);
                         $('#EditarElemento').prop('disabled',false);
+                        $('#MoverElemento').prop('disabled',false);
+                        
+                        
                     });
     
     if (ComoGuardarElemento=='Normal') {
         $('#elementoscontainer').append($btElemento);
     }else{
         $('#galeriacontainer').append($btElemento);
-    }    
+    }
+    
+    //Reset
+    for ( var i=0 ; i<aElementosSeleccionados.length ; i++){
+        $('#'+aElementosSeleccionados[i]).css({"border-color":"#777","border-width":"2px","border-style":"solid"});
+    }                            
+    aElementosSeleccionados = [];    
+    aElementosSeleccionados.push($btElemento.attr('id'));
+    
+    BufferBt.css({"border-color":"#777","border-width":"2px","border-style":"solid"}); //Quitar borde
+    BufferBt = $btElemento;
+    BufferBt.css({"border-color":"#000000","border-width":"5px","border-style":"solid"}); 
     
 }
 
@@ -268,19 +338,67 @@ function CargarDatosElementosBack(data){
                     .addClass('botoneselementos')
                     .css('background-color',ColorFondo)
                     .css('color',ColorLetras)
-                    .bind('click', {CodigoElemento:CodigoElemento},function(event){                   
+                    .bind('click',{CodigoElemento:CodigoElemento},function(event){
                         
-                        BufferBt.css({"border-color":"#777","border-width":"2px","border-style":"solid"});                        
-                        $(this).css({"border-color":"#000000","border-width":"5px","border-style":"solid"});                                                                 
+                        TipoElementoUltimoSeleccionado = data.TipoElemento;                        
                         
-                        var datos = event.data;
-                        CodigoElementoSeleccionado = datos.CodigoElemento;
-                        ElementoSeleccionadoId = this.id;
-                                                
-                        BufferBt = $(this);
+                        if (event.ctrlKey) {                            
+                            
+                            $(this).css({"border-color":"#000000","border-width":"5px","border-style":"solid"});
+                            
+                            if (TipoElementoUltimoSeleccionado==BufferUltimoSeleccionado) {                                
+                                aElementosSeleccionados.push(this.id);
+                            }else{                            
+                                BufferBt.css({"border-color":"#777","border-width":"2px","border-style":"solid"});                                                                                          
+                                
+                                var datos = event.data;
+                                CodigoElementoSeleccionado = datos.CodigoElemento;
+                                ElementoSeleccionadoId = this.id;
+                                
+                                var Elemento = $("#" + ElementoSeleccionadoId);
+                
+                                NombreContenedor = Elemento.parent().attr('id');
+                                                        
+                                BufferBt = $(this);
+                                
+                                for ( var i=0 ; i<aElementosSeleccionados.length ; i++){
+                                    $('#'+aElementosSeleccionados[i]).css({"border-color":"#777","border-width":"2px","border-style":"solid"});
+                                }
+                                
+                                aElementosSeleccionados = [];
+                                aElementosSeleccionados.push(ElementoSeleccionadoId);                                
+                            }                            
+                            
+                        }else{                            
+                        
+                            BufferBt.css({"border-color":"#777","border-width":"2px","border-style":"solid"});                        
+                            $(this).css({"border-color":"#000000","border-width":"5px","border-style":"solid"});                                                                 
+                            
+                            var datos = event.data;
+                            CodigoElementoSeleccionado = datos.CodigoElemento;
+                            ElementoSeleccionadoId = this.id;
+                            
+                            var Elemento = $("#" + ElementoSeleccionadoId);
+                
+                            NombreContenedor = Elemento.parent().attr('id');
+                                                    
+                            BufferBt = $(this);
+                            
+                            for ( var i=0 ; i<aElementosSeleccionados.length ; i++){
+                                $('#'+aElementosSeleccionados[i]).css({"border-color":"#777","border-width":"2px","border-style":"solid"});
+                            }
+                            
+                            aElementosSeleccionados = [];
+                            aElementosSeleccionados.push(ElementoSeleccionadoId);
+                        
+                        }
+                        
+                        BufferUltimoSeleccionado = data.TipoElemento;
                         
                         $('#BorrarElemento').prop('disabled',false);
                         $('#EditarElemento').prop('disabled',false);
+                        $('#MoverElemento').prop('disabled',false);
+                        
                     });
         
         if (data.TipoElemento=='Normal') {
@@ -297,9 +415,21 @@ function CargarDatosElementosBack(data){
 
 function BorrarElemento(){
     
-    $('#'+ElementoSeleccionadoId).remove();
+    var aCodigosElementosSeleccionados = [];
+    
+    for ( var i=0 ; i<aElementosSeleccionados.length ; i++){
+        $('#'+aElementosSeleccionados[i]).remove();
+        aCodigosElementosSeleccionados.push(aElementosSeleccionados[i].substr(2));
+    }
+                            
+    aElementosSeleccionados = [];
+    
+    socket.emit('BorrarElemento',{aCodigosElementosSeleccionados:aCodigosElementosSeleccionados});    
+    
     $('#BorrarElemento').prop('disabled',true);
-    socket.emit('BorrarElemento',{CodigoElementoSeleccionado:CodigoElementoSeleccionado});
+    $('#EditarElemento').prop('disabled',true);
+    $('#MoverElemento').prop('disabled',true);
+    
     
 }
 
@@ -307,6 +437,7 @@ function EditarElemento(){
     
     $('#EditarElemento').prop('disabled',true);
     $('#BorrarElemento').prop('disabled',true);
+    $('#MoverElemento').prop('disabled',true);
     socket.emit('EditarElemento',{CodigoElementoSeleccionado:CodigoElementoSeleccionado});
     
 }
@@ -373,5 +504,156 @@ function CargarTerminalesConfigBack(data){
         $('#TerminalDeSalida').multiselect('refresh');
     
     }, 1000);
+    
+}
+
+function MoverElemento(){
+    
+    var aCodigosElementosSeleccionados = [];       
+    
+    if (NombreContenedor=='elementoscontainer'){
+        
+        for ( var i=0 ; i<aElementosSeleccionados.length ; i++){
+            
+            aCodigosElementosSeleccionados.push(aElementosSeleccionados[i].substr(2));
+            
+            var Elementos = $("#" + aElementosSeleccionados[i]);
+            Elementos.unbind('click');
+            $('#'+aElementosSeleccionados[i]).appendTo($('#galeriacontainer'));
+            Elementos.css({"border-color":"#777","border-width":"2px","border-style":"solid"});            
+            
+            Elementos.on('click',{CodigoElemento:aCodigosElementosSeleccionados[i]},function(event){
+                
+                $('#MoverElemento').prop('disabled',true);
+                $('#BorrarElemento').prop('disabled',true);
+                $('#EditarElemento').prop('disabled',true);
+                
+                var datos = event.data;
+                CodigoElementoSeleccionado = datos.CodigoElemento;
+                ElementoSeleccionadoId = this.id;
+                
+                TipoElementoUltimoSeleccionado = 'Galeria';
+                
+                if (event.ctrlKey) {                            
+                            
+                    $(this).css({"border-color":"#000000","border-width":"5px","border-style":"solid"});
+                            
+                    if (TipoElementoUltimoSeleccionado==BufferUltimoSeleccionado) {                                
+                        aElementosSeleccionados.push(this.id);
+                    }else{                            
+                        BufferBt.css({"border-color":"#777","border-width":"2px","border-style":"solid"});                          
+                
+                        NombreContenedor = $(this).parent().attr('id');
+                                                        
+                        BufferBt = $(this);
+                                
+                        for ( var i=0 ; i<aElementosSeleccionados.length ; i++){
+                            $('#'+aElementosSeleccionados[i]).css({"border-color":"#777","border-width":"2px","border-style":"solid"});
+                        }
+                                
+                        aElementosSeleccionados = [];
+                        ElementoSeleccionadoId = this.id;
+                        aElementosSeleccionados.push(ElementoSeleccionadoId);                                
+                    }                            
+                            
+                }else{                            
+                        
+                    BufferBt.css({"border-color":"#777","border-width":"2px","border-style":"solid"});                        
+                    $(this).css({"border-color":"#000000","border-width":"5px","border-style":"solid"});                                                                 
+                            
+                    NombreContenedor = $(this).parent().attr('id');
+                                                    
+                    BufferBt = $(this);
+                            
+                    for ( var i=0 ; i<aElementosSeleccionados.length ; i++){
+                        $('#'+aElementosSeleccionados[i]).css({"border-color":"#777","border-width":"2px","border-style":"solid"});
+                    }
+                            
+                    aElementosSeleccionados = [];
+                    ElementoSeleccionadoId = this.id;
+                    aElementosSeleccionados.push(ElementoSeleccionadoId);
+                        
+                }
+                
+                BufferUltimoSeleccionado = 'Galeria';                 
+                
+                
+            });       
+            
+        }
+        socket.emit('MoverElementos',{CodigoPadre:CodigoPadre2,CodigosElementosSeleccionados:aCodigosElementosSeleccionados});
+    
+    }else{
+        
+        for ( var i=0 ; i<aElementosSeleccionados.length ; i++){
+            
+            aCodigosElementosSeleccionados.push(aElementosSeleccionados[i].substr(2));
+            
+            var Elementos = $("#" + aElementosSeleccionados[i]);
+            Elementos.unbind('click');
+            $('#'+aElementosSeleccionados[i]).appendTo($('#elementoscontainer'));
+            Elementos.css({"border-color":"#777","border-width":"2px","border-style":"solid"});            
+            
+            Elementos.on('click',{CodigoElemento:aCodigosElementosSeleccionados[i]},function(event){
+                
+                $('#MoverElemento').prop('disabled',true);
+                $('#BorrarElemento').prop('disabled',true);
+                $('#EditarElemento').prop('disabled',true);
+                
+                var datos = event.data;
+                CodigoElementoSeleccionado = datos.CodigoElemento;
+                ElementoSeleccionadoId = this.id;
+                
+                TipoElementoUltimoSeleccionado = 'Normal';
+                
+                if (event.ctrlKey) {                            
+                            
+                    $(this).css({"border-color":"#000000","border-width":"5px","border-style":"solid"});
+                            
+                    if (TipoElementoUltimoSeleccionado==BufferUltimoSeleccionado) {                                
+                        aElementosSeleccionados.push(this.id);
+                    }else{                            
+                        BufferBt.css({"border-color":"#777","border-width":"2px","border-style":"solid"});                          
+                
+                        NombreContenedor = $(this).parent().attr('id');
+                                                        
+                        BufferBt = $(this);
+                                
+                        for ( var i=0 ; i<aElementosSeleccionados.length ; i++){
+                            $('#'+aElementosSeleccionados[i]).css({"border-color":"#777","border-width":"2px","border-style":"solid"});
+                        }
+                                
+                        aElementosSeleccionados = [];
+                        ElementoSeleccionadoId = this.id;
+                        aElementosSeleccionados.push(ElementoSeleccionadoId);                                
+                    }                            
+                            
+                }else{                            
+                        
+                    BufferBt.css({"border-color":"#777","border-width":"2px","border-style":"solid"});                        
+                    $(this).css({"border-color":"#000000","border-width":"5px","border-style":"solid"});                                                                 
+                            
+                    NombreContenedor = $(this).parent().attr('id');
+                                                    
+                    BufferBt = $(this);
+                            
+                    for ( var i=0 ; i<aElementosSeleccionados.length ; i++){
+                        $('#'+aElementosSeleccionados[i]).css({"border-color":"#777","border-width":"2px","border-style":"solid"});
+                    }
+                            
+                    aElementosSeleccionados = [];
+                    ElementoSeleccionadoId = this.id;
+                    aElementosSeleccionados.push(ElementoSeleccionadoId);
+                        
+                }
+                
+                BufferUltimoSeleccionado = 'Normal';               
+                
+            });       
+            
+        }
+        socket.emit('MoverElementos',{CodigoPadre:CodigoPadre,CodigosElementosSeleccionados:aCodigosElementosSeleccionados});
+        
+    }                
     
 }

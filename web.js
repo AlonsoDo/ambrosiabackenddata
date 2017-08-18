@@ -822,25 +822,27 @@ io.sockets.on('connection',function(socket){
         
     });
     
-    socket.on('BorrarElemento',function(data){
+    socket.on('BorrarElemento',function(data){        
         
-        console.log(data.CodigoElementoSeleccionado);        
-        
+        var values = [];
         var cQuery;    
-      
-        pool.getConnection(function(err,connection){
-            cQuery = "DELETE FROM elementos WHERE ElementoId='"+data.CodigoElementoSeleccionado+"'";
-            connection.query(cQuery,function(err,rows){
-                if (err){
-                    socket.emit('Error',{Error:err.message});
-                    console.log('Error: ' + err.message);
-                    throw err;                    
-                }else{                     
-                    
-                }                
+        for (var j = 0 ; j < data.aCodigosElementosSeleccionados.length ; j++){                        
+            values.push([data.aCodigosElementosSeleccionados[j]]);                    
+        }                        
+        if (values.length > 0){                    
+            pool.getConnection(function(err,connection){
+                cQuery = "DELETE FROM elementos WHERE ElementoId IN (?)";                     
+                connection.query(cQuery,[values],function(err){
+                    if (err){
+                        socket.emit('Error',{Error:err.message});
+                        console.log('Error: ' + err.message);
+                        throw err;
+                    }else{                                     
+                    }
+                    connection.release();
+                });                            
             });
-            connection.release();
-        });        
+        }
         
     });
     
@@ -1073,9 +1075,31 @@ io.sockets.on('connection',function(socket){
         function(err, results) {
             // results is now equal to ['1','2','3','4','5']
             console.log(err);
-        });
+        });        
         
+    });
+    
+    socket.on('MoverElementos',function(data){
         
+        console.log(data.CodigoPadre);
+                
+        var cQuery;      
+        pool.getConnection(function(err,connection){
+            var values = [];
+            for (var j = 0 ; j < data.CodigosElementosSeleccionados.length ; j++){                        
+                values.push(data.CodigosElementosSeleccionados[j]);                    
+            }
+            cQuery = "UPDATE elementos SET PadreId='" + data.CodigoPadre + "' WHERE ElementoId in (?)";            
+            connection.query(cQuery,[values],function(err,rows){
+                if (err){
+                    socket.emit('Error',{Error:err.message});
+                    console.log('Error: ' + err.message);
+                    throw err;                    
+                }else{                            
+                }                
+            });
+            connection.release();
+        });        
         
     });    
   
