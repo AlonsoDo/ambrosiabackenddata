@@ -7,21 +7,22 @@ var async = require('async');
 
 var mysql = require('mysql');
 
-var pool  = mysql.createPool({
+/*var pool  = mysql.createPool({
     host : 'eu-cdbr-west-01.cleardb.com',
     user : 'bec9f1dbb65163',
     password : '8a687c05', 
-    database : 'heroku_f5b0ff88b3e8283',
-    connectionLimit : 200
-}); //limit to 10 connectios on free plan
+    database : 'heroku_f5b0ff88b3e8283'
+    //queueLimit : 1000
+    //connectionLimit : 200
+}); //limit to 10 connectios on free plan*/
 
-/*var pool  = mysql.createPool({
+var pool  = mysql.createPool({
     host : '',
     user : 'root',
     password : 'charly', 
     database : 'ambrosia',
     connectionLimit : 200
-});*/
+});
 
 var io = require('socket.io').listen(server);
 var nodemailer = require('nodemailer');
@@ -748,7 +749,7 @@ io.sockets.on('connection',function(socket){
                     
                     ElementoId = rows.insertId;
                     
-                    socket.emit('GuardarElementoBack',{ElementoId:ElementoId,ComoGuardarElemento:data.ComoGuardarElemento});
+                    socket.emit('GuardarElementoBack',{ElementoId:ElementoId,ComoGuardarElemento:data.ComoGuardarElemento,Descripcion:data.Descripcion,ColorLetras:data.ColorLetras,ColorFondo:data.ColorFondo});
                     
                     var values = [];
                     
@@ -972,8 +973,8 @@ io.sockets.on('connection',function(socket){
         
         console.log('Codigo: '+data.CodigoElementoSeleccionado);
         
-        async.series([
-            function(callback) {
+        async.series({
+            one:function(callback) {
                 // Borrar impresoras config ...
                 var cQuery;      
                 pool.getConnection(function(err,connection){
@@ -983,14 +984,15 @@ io.sockets.on('connection',function(socket){
                             socket.emit('Error',{Error:err.message});
                             console.log('Error: ' + err.message);
                             throw err;                    
-                        }else{                            
+                        }else{
+                            console.log('Paso 1');
+                            callback(null, 'two');
                         }                
                     });
                     connection.release();
-                });
-                callback(null, '1');
+                });                
             },
-            function(callback) {
+            two:function(callback) {
                 // Borrar terminales config ...
                 var cQuery;      
                 pool.getConnection(function(err,connection){
@@ -1000,14 +1002,15 @@ io.sockets.on('connection',function(socket){
                             socket.emit('Error',{Error:err.message});
                             console.log('Error: ' + err.message);
                             throw err;                    
-                        }else{                            
+                        }else{
+                            console.log('Paso 2');
+                            callback(null, 'three');
                         }                
                     });
                     connection.release();
-                });
-                callback(null, '2');
+                });                
             },
-            function(callback) {
+            three:function(callback) {
                 // Actualizar registro elemento ...                
                 var cQuery;      
                 pool.getConnection(function(err,connection){
@@ -1017,14 +1020,17 @@ io.sockets.on('connection',function(socket){
                             socket.emit('Error',{Error:err.message});
                             console.log('Error: ' + err.message);
                             throw err;                    
-                        }else{                            
+                        }else{
+                            socket.emit('ActualizarElementoBack',{Descripcion:data.Descripcion,ElementoId:data.CodigoElementoSeleccionado,ColorLetras:data.ColorLetras,ColorFondo:data.ColorFondo});
+                            console.log('Paso 3');
+                            callback(null, 'four');
                         }                
                     });
                     connection.release();
                 });                
-                callback(null, '3');
             },
-            function(callback) {
+            four:function(callback) {
+                callback(null, 'five');
                 // Grabar impresoras config ...
                 var values = [];
                 var cQuery;    
@@ -1039,15 +1045,15 @@ io.sockets.on('connection',function(socket){
                                 socket.emit('Error',{Error:err.message});
                                 console.log('Error: ' + err.message);
                                 throw err;
-                            }else{                                     
-                            }
-                            connection.release();
+                            }else{
+                                console.log('Paso 4');                                
+                            }                            
                         });                            
-                    });
-                }
-                callback(null, '4');
+                        connection.release();
+                    });                    
+                }                
             },
-            function(callback) {
+            five:function(callback) {
                 // Grabar terminales config ...
                 var values = [];
                 var cQuery;    
@@ -1062,15 +1068,15 @@ io.sockets.on('connection',function(socket){
                                 socket.emit('Error',{Error:err.message});
                                 console.log('Error: ' + err.message);
                                 throw err;
-                            }else{                                     
-                            }
-                            connection.release();
+                            }else{
+                                console.log('Paso 5');
+                            }                            
                         });                            
-                    });
-                }
-                callback(null, '5');
+                        connection.release();
+                    });                    
+                }                
             }
-        ],
+        },
         // optional callback
         function(err, results) {
             // results is now equal to ['1','2','3','4','5']
@@ -1101,6 +1107,160 @@ io.sockets.on('connection',function(socket){
             connection.release();
         });        
         
-    });    
+    });
+    
+    socket.on('CopiarElementos',function(data){
+        
+        //console.log(data.CodigoPadre);
+        var cQuery; 
+        var Id = 0;
+        var Id2 = 0;
+        var CompanyId;
+        var Descripcion;
+        var Precio;
+        var Impuesto;
+        var ImprimirEnFactura;
+        var ImprimirEnComanda;
+        var ColorLetras;
+        var ColorFondo;
+        var TieneImpresora;
+        var TieneTerminal;
+        var values1 = [];
+        var values2 = [];
+                
+        async.series({
+            one: function(callback) {                     
+                pool.getConnection(function(err,connection){
+                    cQuery = "SELECT * FROM elementos WHERE ElementoId='"+data.ElementoSeleccionado+"'";
+                    connection.query(cQuery,function(err,rows){
+                        if (err){
+                            socket.emit('Error',{Error:err.message});
+                            console.log('Error: ' + err.message);
+                            throw err;                    
+                        }else{
+                            console.log('Id:'+rows[0].ElementoId);
+                            Id = rows[0].ElementoId;
+                            CompanyId = rows[0].CompanyId;
+                            Descripcion = rows[0].Descripcion;
+                            Precio = rows[0].Precio;
+                            Impuesto = rows[0].Impuesto;
+                            ImprimirEnFactura = rows[0].ImprimirEnFactura;
+                            ImprimirEnComanda = rows[0].ImprimirEnComanda;
+                            ColorLetras = rows[0].ColorLetras;
+                            ColorFondo = rows[0].ColorFondo;
+                            TieneImpresora = rows[0].TieneImpresora;
+                            TieneTerminal = rows[0].TieneTerminal;
+                            callback(null,'two');
+                        }                
+                    });
+                    connection.release();                    
+                });                
+            },
+            two: function(callback){                
+                console.log('dos');                
+                pool.getConnection(function(err,connection){            
+                    cQuery = "INSERT INTO elementos(PadreId,CompanyId,Descripcion,Precio,Impuesto,ImprimirEnFactura,ImprimirEnComanda,ColorLetras,ColorFondo,TieneImpresora,TieneTerminal) VALUES ('"+data.CodigoPadre+"','"+CompanyId+"','"+Descripcion+"','"+Precio+"','"+Impuesto+"','"+ImprimirEnFactura+"','"+ImprimirEnComanda+"','"+ColorLetras+"','"+ColorFondo+"','"+TieneImpresora+"','"+TieneTerminal+"')";     
+                    connection.query(cQuery,function(err,rows){
+                        if (err){                            
+                            socket.emit('Error',{Error:err.message});
+                            console.log('Error: ' + err.message);
+                            throw err;                        
+                        }else{
+                            Id2 = rows.insertId;
+                            callback(null, 'three' );
+                        }
+                    });
+                    connection.release();
+                });               
+            },
+            three: function(callback){                
+                console.log('tres');
+                pool.getConnection(function(err,connection){            
+                    cQuery = "SELECT * FROM impresoraconfig WHERE ElementoId='"+Id+"'";     
+                    connection.query(cQuery,function(err,rows){
+                        if (err){                            
+                            socket.emit('Error',{Error:err.message});
+                            console.log('Error: ' + err.message);
+                            throw err;                        
+                        }else{
+                            console.log(rows.length);
+                            for (var j = 0 ; j < rows.length ; j++){                        
+                                values1.push([Id2,rows[j].NombreImpresora]);                    
+                            }
+                            callback(null, 'four');
+                        }
+                    });
+                    connection.release();
+                });                 
+            },
+            four: function(callback){
+                callback(null, 'five');
+                console.log('cuatro');
+                if (values1.length > 0){                    
+                    pool.getConnection(function(err,connection){
+                        cQuery = "INSERT INTO impresoraconfig ( ElementoId , NombreImpresora ) VALUES ?";     
+                        connection.query(cQuery,[values1],function(err){
+                            if (err){
+                                socket.emit('Error',{Error:err.message});
+                                console.log('Error: ' + err.message);
+                                throw err;
+                            }else{                                
+                            }                            
+                        });
+                        connection.release();
+                    });
+                }                
+            },
+            five: function(callback){                
+                console.log('cinco');
+                pool.getConnection(function(err,connection){            
+                    cQuery = "SELECT * FROM terminalconfig WHERE ElementoId='"+Id+"'";     
+                    connection.query(cQuery,function(err,rows){
+                        if (err){                            
+                            socket.emit('Error',{Error:err.message});
+                            console.log('Error: ' + err.message);
+                            throw err;                        
+                        }else{
+                            console.log(rows.length);
+                            for (var j = 0 ; j < rows.length ; j++){                        
+                                values2.push([Id2,rows[j].NombreTerminal]);                    
+                            }
+                            callback(null, 'six');
+                        }
+                    });
+                    connection.release();
+                });  
+            },
+            six: function(callback){
+                callback(null, 'seven');
+                console.log('seis');
+                if (values2.length > 0){                    
+                    pool.getConnection(function(err,connection){
+                        cQuery = "INSERT INTO terminalconfig ( ElementoId , NombreTerminal ) VALUES ?";     
+                        connection.query(cQuery,[values2],function(err){
+                            if (err){
+                                socket.emit('Error',{Error:err.message});
+                                console.log('Error: ' + err.message);
+                                throw err;
+                            }else{
+                                console.log('Fin');
+                            }                            
+                        });
+                        connection.release();
+                    });
+                }
+            },
+            seven: function(callback){
+                if (data.CodigoPadre!=-1){
+                    socket.emit('GuardarElementoBack',{ElementoId:Id2,ComoGuardarElemento:'Normal',Descripcion:Descripcion,ColorLetras:ColorLetras,ColorFondo:ColorFondo});
+                }else{
+                    socket.emit('GuardarElementoBack',{ElementoId:Id2,ComoGuardarElemento:'Galeria',Descripcion:Descripcion,ColorLetras:ColorLetras,ColorFondo:ColorFondo});
+                }                
+            }
+        }, function(err, results) {
+            console.log(err);
+        });                   
+        
+    });
   
 });

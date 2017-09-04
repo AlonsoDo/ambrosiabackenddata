@@ -224,7 +224,7 @@ function GuardarElementoNuevo(){
     }else{
         //Actualizar datos elemento        
         socket.emit('ActualizarElemento',{CodigoElementoSeleccionado:CodigoElementoSeleccionado,Descripcion:$('#descripcion').val(),Precio:$('#precio').val(),Impuesto:$('#impuesto').val(),FlagImprimirEnComanda:FlagImprimirEnComanda,FlagImprimirEnFactura:FlagImprimirEnFactura,ColorLetras:$('#colorletras').val(),ColorFondo:$('#colorfondo').val(),ImpresorasSeleccionadas:ImpresorasSeleccionadas,TerminalesSeleccionadas:TerminalesSeleccionadas,aImpresorasSeleccionadas:aImpresorasSeleccionadas,aTerminalesSeleccionadas:aTerminalesSeleccionadas});
-        BufferBt.prop('value',$('#descripcion').val());
+        //BufferBt.prop('value',$('#descripcion').val());
     }
     
     BufferColorFondo = $('#colorfondo').val();
@@ -232,25 +232,28 @@ function GuardarElementoNuevo(){
     
 }
 
-function CrearElementoEnConteiner(ElementoId,ComoGuardarElemento){
+function CrearElementoEnConteiner(ElementoId,ComoGuardarElemento,Descripcion,ColorLetras,ColorFondo){
+    
+    //alert(Descripcion)
     
     var $btElemento = $('<input/>')
-                    .attr({ type:'button' , id:'bt'+ElementoId , value:$('#descripcion').val() })
+                    .attr({ type:'button' , id:'bt'+ElementoId , value:Descripcion })
                     .addClass('botoneselementos')
-                    .css('background-color', $('#colorfondo').val())
-                    .css('color', $('#colorletras').val())
+                    .css('background-color', ColorFondo)
+                    .css('color', ColorLetras)
                     .bind('click',{ CodigoElemento:ElementoId},function(event){                   
                         
                         TipoElementoUltimoSeleccionado = ComoGuardarElemento;
                         
                         if (event.ctrlKey) {                            
                             
-                            $(this).css({"border-color":"#000000","border-width":"5px","border-style":"solid"});
+                            $(this).css({"border-color":"#000000","border-width":"5px","border-style":"solid"}); //Select
                             
+                            // Mismo container
                             if (TipoElementoUltimoSeleccionado==BufferUltimoSeleccionado) {                                
                                 aElementosSeleccionados.push(this.id);
                             }else{                            
-                                BufferBt.css({"border-color":"#777","border-width":"2px","border-style":"solid"});                                                                                          
+                                BufferBt.css({"border-color":"#777","border-width":"2px","border-style":"solid"}); //Unselect                                                                                         
                                 
                                 var datos = event.data;
                                 CodigoElementoSeleccionado = datos.CodigoElemento;
@@ -272,8 +275,7 @@ function CrearElementoEnConteiner(ElementoId,ComoGuardarElemento){
                             
                         }else{                            
                         
-                            BufferBt.css({"border-color":"#777","border-width":"2px","border-style":"solid"});                        
-                            $(this).css({"border-color":"#000000","border-width":"5px","border-style":"solid"});                                                                 
+                            BufferBt.css({"border-color":"#777","border-width":"2px","border-style":"solid"});                                                                                              
                             
                             var datos = event.data;
                             CodigoElementoSeleccionado = datos.CodigoElemento;
@@ -291,6 +293,7 @@ function CrearElementoEnConteiner(ElementoId,ComoGuardarElemento){
                             
                             aElementosSeleccionados = [];
                             aElementosSeleccionados.push(ElementoSeleccionadoId);
+                            $(this).css({"border-color":"#000000","border-width":"5px","border-style":"solid"});
                         
                         }
                         
@@ -299,7 +302,7 @@ function CrearElementoEnConteiner(ElementoId,ComoGuardarElemento){
                         $('#BorrarElemento').prop('disabled',false);
                         $('#EditarElemento').prop('disabled',false);
                         $('#MoverElemento').prop('disabled',false);
-                        
+                        $('#CopiarElementos').prop('disabled',false);
                         
                     });
     
@@ -371,8 +374,7 @@ function CargarDatosElementosBack(data){
                             
                         }else{                            
                         
-                            BufferBt.css({"border-color":"#777","border-width":"2px","border-style":"solid"});                        
-                            $(this).css({"border-color":"#000000","border-width":"5px","border-style":"solid"});                                                                 
+                            BufferBt.css({"border-color":"#777","border-width":"2px","border-style":"solid"});                                                                                               
                             
                             var datos = event.data;
                             CodigoElementoSeleccionado = datos.CodigoElemento;
@@ -390,6 +392,7 @@ function CargarDatosElementosBack(data){
                             
                             aElementosSeleccionados = [];
                             aElementosSeleccionados.push(ElementoSeleccionadoId);
+                            $(this).css({"border-color":"#000000","border-width":"5px","border-style":"solid"});
                         
                         }
                         
@@ -398,6 +401,7 @@ function CargarDatosElementosBack(data){
                         $('#BorrarElemento').prop('disabled',false);
                         $('#EditarElemento').prop('disabled',false);
                         $('#MoverElemento').prop('disabled',false);
+                        $('#CopiarElementos').prop('disabled',false);
                         
                     });
         
@@ -429,7 +433,7 @@ function BorrarElemento(){
     $('#BorrarElemento').prop('disabled',true);
     $('#EditarElemento').prop('disabled',true);
     $('#MoverElemento').prop('disabled',true);
-    
+    $('#CopiarElementos').prop('disabled',true);    
     
 }
 
@@ -438,6 +442,7 @@ function EditarElemento(){
     $('#EditarElemento').prop('disabled',true);
     $('#BorrarElemento').prop('disabled',true);
     $('#MoverElemento').prop('disabled',true);
+    $('#CopiarElementos').prop('disabled',true);
     socket.emit('EditarElemento',{CodigoElementoSeleccionado:CodigoElementoSeleccionado});
     
 }
@@ -473,7 +478,7 @@ function CargarDatosElementoBack(data){
     
     $('#tituloelemento').text('Modificar datos del elemento');
     
-    $('#nuevoelementomodal').modal('show');
+    //$('#nuevoelementomodal').modal('show');
     
 }
 
@@ -503,7 +508,9 @@ function CargarTerminalesConfigBack(data){
         }
         $('#TerminalDeSalida').multiselect('refresh');
     
-    }, 1000);
+    }, 1000);    
+    
+    $('#nuevoelementomodal').modal('show');
     
 }
 
@@ -524,9 +531,10 @@ function MoverElemento(){
             
             Elementos.on('click',{CodigoElemento:aCodigosElementosSeleccionados[i]},function(event){
                 
-                $('#MoverElemento').prop('disabled',true);
-                $('#BorrarElemento').prop('disabled',true);
-                $('#EditarElemento').prop('disabled',true);
+                $('#MoverElemento').prop('disabled',false);
+                $('#BorrarElemento').prop('disabled',false);
+                $('#EditarElemento').prop('disabled',false);
+                $('#CopiarElementos').prop('disabled',false);
                 
                 var datos = event.data;
                 CodigoElementoSeleccionado = datos.CodigoElemento;
@@ -558,8 +566,7 @@ function MoverElemento(){
                             
                 }else{                            
                         
-                    BufferBt.css({"border-color":"#777","border-width":"2px","border-style":"solid"});                        
-                    $(this).css({"border-color":"#000000","border-width":"5px","border-style":"solid"});                                                                 
+                    BufferBt.css({"border-color":"#777","border-width":"2px","border-style":"solid"});                                                                                    
                             
                     NombreContenedor = $(this).parent().attr('id');
                                                     
@@ -572,6 +579,7 @@ function MoverElemento(){
                     aElementosSeleccionados = [];
                     ElementoSeleccionadoId = this.id;
                     aElementosSeleccionados.push(ElementoSeleccionadoId);
+                    $(this).css({"border-color":"#000000","border-width":"5px","border-style":"solid"}); 
                         
                 }
                 
@@ -596,9 +604,10 @@ function MoverElemento(){
             
             Elementos.on('click',{CodigoElemento:aCodigosElementosSeleccionados[i]},function(event){
                 
-                $('#MoverElemento').prop('disabled',true);
-                $('#BorrarElemento').prop('disabled',true);
-                $('#EditarElemento').prop('disabled',true);
+                $('#MoverElemento').prop('disabled',false);
+                $('#BorrarElemento').prop('disabled',false);
+                $('#EditarElemento').prop('disabled',false);
+                $('#CopiarElementos').prop('disabled',false);
                 
                 var datos = event.data;
                 CodigoElementoSeleccionado = datos.CodigoElemento;
@@ -630,8 +639,7 @@ function MoverElemento(){
                             
                 }else{                            
                         
-                    BufferBt.css({"border-color":"#777","border-width":"2px","border-style":"solid"});                        
-                    $(this).css({"border-color":"#000000","border-width":"5px","border-style":"solid"});                                                                 
+                    BufferBt.css({"border-color":"#777","border-width":"2px","border-style":"solid"});                                                                                      
                             
                     NombreContenedor = $(this).parent().attr('id');
                                                     
@@ -644,6 +652,7 @@ function MoverElemento(){
                     aElementosSeleccionados = [];
                     ElementoSeleccionadoId = this.id;
                     aElementosSeleccionados.push(ElementoSeleccionadoId);
+                    $(this).css({"border-color":"#000000","border-width":"5px","border-style":"solid"});
                         
                 }
                 
@@ -655,5 +664,21 @@ function MoverElemento(){
         socket.emit('MoverElementos',{CodigoPadre:CodigoPadre,CodigosElementosSeleccionados:aCodigosElementosSeleccionados});
         
     }                
+    
+}
+
+function CopiarElementos(){
+    
+    for ( var i=0 ; i<aElementosSeleccionados.length ; i++){
+    
+        NombreContenedor = $('#'+aElementosSeleccionados[i]).parent().attr('id');
+        
+        if (NombreContenedor=='elementoscontainer') {
+            socket.emit('CopiarElementos',{CodigoPadre:CodigoPadre2,ElementoSeleccionado:aElementosSeleccionados[i].substr(2)});
+        }else{
+            socket.emit('CopiarElementos',{CodigoPadre:CodigoPadre,ElementoSeleccionado:aElementosSeleccionados[i].substr(2)});
+        }
+    
+    }
     
 }
