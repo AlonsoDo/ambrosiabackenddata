@@ -304,6 +304,12 @@ function CrearElementoEnConteiner(ElementoId,ComoGuardarElemento,Descripcion,Col
                         $('#MoverElemento').prop('disabled',false);
                         $('#CopiarElementos').prop('disabled',false);
                         
+                        if ($('#'+aElementosSeleccionados[0]).parent().attr('id')=='elementoscontainer'){
+                            $('#BajarNivel').prop('disabled',false);                                
+                        }else{
+                            $('#BajarNivel').prop('disabled',true);
+                        } 
+                        
                     });
     
     if (ComoGuardarElemento=='Normal') {
@@ -401,7 +407,13 @@ function CargarDatosElementosBack(data){
                         $('#BorrarElemento').prop('disabled',false);
                         $('#EditarElemento').prop('disabled',false);
                         $('#MoverElemento').prop('disabled',false);
-                        $('#CopiarElementos').prop('disabled',false);
+                        $('#CopiarElementos').prop('disabled',false);                        
+                        
+                        if ($('#'+aElementosSeleccionados[0]).parent().attr('id')=='elementoscontainer'){
+                            $('#BajarNivel').prop('disabled',false);                                
+                        }else{
+                            $('#BajarNivel').prop('disabled',true);
+                        }                        
                         
                     });
         
@@ -583,8 +595,13 @@ function MoverElemento(){
                         
                 }
                 
-                BufferUltimoSeleccionado = 'Galeria';                 
+                BufferUltimoSeleccionado = 'Galeria';
                 
+                if ($('#'+aElementosSeleccionados[0]).parent().attr('id')=='elementoscontainer'){
+                    $('#BajarNivel').prop('disabled',false);                                
+                }else{
+                    $('#BajarNivel').prop('disabled',true);
+                }                
                 
             });       
             
@@ -656,7 +673,13 @@ function MoverElemento(){
                         
                 }
                 
-                BufferUltimoSeleccionado = 'Normal';               
+                BufferUltimoSeleccionado = 'Normal';
+                
+                if ($('#'+aElementosSeleccionados[0]).parent().attr('id')=='elementoscontainer'){
+                    $('#BajarNivel').prop('disabled',false);                                
+                }else{
+                    $('#BajarNivel').prop('disabled',true);
+                } 
                 
             });       
             
@@ -679,6 +702,67 @@ function CopiarElementos(){
             socket.emit('CopiarElementos',{CodigoPadre:CodigoPadre,ElementoSeleccionado:aElementosSeleccionados[i].substr(2)});
         }
     
+    }
+    
+}
+
+function BajarNivel(){
+    
+    var Elemento = $('#'+aElementosSeleccionados[0]);
+       
+    $('#BajarNivel').prop('disabled',true);
+    CodigoPadre = aElementosSeleccionados[0].substr(2);
+    
+    LevelControl++;
+    aLevels[LevelControl] = CodigoPadre;
+    aPaths[LevelControl] = Elemento.attr("value");
+    
+    $('#elementoscontainer').empty();
+    socket.emit('CargarDatosElementos',{CompanyId:CompanyId,CodigoPadre:CodigoPadre,TipoElemento:'Normal'});
+    
+    $('#pathcontainer').empty();
+    
+    for (var i=0;i<LevelControl+1;i++) {        
+        var cName = 'Lb'+aLevels[i];
+        $("#pathcontainer").append('<a href="#" id='+cName+' onClick="path_click(id)" style="float:left; margin-left:16px; margin-top:10px; margin-right:12px; font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:16px;">'+aPaths[i]+'</a>');
+    }    
+    
+}
+
+function SubirNivel(){
+    
+    LevelControl--;
+    if (LevelControl<0){
+        LevelControl = 0;
+    }
+    
+    CodigoPadre = aLevels[LevelControl];
+    
+    $('#elementoscontainer').empty();
+    socket.emit('CargarDatosElementos',{CompanyId:CompanyId,CodigoPadre:CodigoPadre,TipoElemento:'Normal'});
+    
+    $('#pathcontainer').empty();
+    
+    for (var i=0;i<LevelControl+1;i++) {
+        var cName = 'Lb'+aLevels[i];
+        $("#pathcontainer").append('<a href="#" id='+cName+' onClick="path_click(id)" style="float:left; margin-left:16px; margin-top:10px; margin-right:12px; font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:16px;">'+aPaths[i]+'</a>');
+    }
+    
+}
+
+function path_click(clicked_id){    
+    
+    CodigoPadre = clicked_id.substr(2);
+    $('#elementoscontainer').empty();
+    socket.emit('CargarDatosElementos',{CompanyId:CompanyId,CodigoPadre:CodigoPadre,TipoElemento:'Normal'});    
+    
+    LevelControl = $('#'+clicked_id).index();
+    
+    $('#pathcontainer').empty();
+    
+    for (var i=0;i<LevelControl+1;i++) {
+        var cName = 'Lb'+aLevels[i];
+        $("#pathcontainer").append('<a href="#" id='+cName+' onClick="path_click(id)" style="float:left; margin-left:16px; margin-top:10px; margin-right:12px; font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:16px;">'+aPaths[i]+'</a>');
     }
     
 }

@@ -62,6 +62,12 @@
         var CodigoPadre = 0;       //elementoscontainer
         var CodigoPadre2 = -1;    //galeriacontainer
         
+        var aLevels = new Array(40);
+        var aPaths = new Array(40);
+        var LevelControl = 0;
+        aLevels[0] = 0;
+        aPaths[0] = 'Selecionar un elemento';
+                
         var BufferIdImpresora;
         var BufferNombreImpresora;
         var InsertUpdateImpresora = 'Update';
@@ -105,6 +111,7 @@
             $('#EditarElemento').prop('disabled',true);
             $('#MoverElemento').prop('disabled',true);                        
             $('#CopiarElementos').prop('disabled',true);
+            $('#BajarNivel').prop('disabled',true);
             
             $('#login').click(function(){ 
  
@@ -152,6 +159,8 @@
                 $('#logincontainer').hide();                
                 
                 CargarDatos();
+                
+                $("#pathcontainer").append('<a href="#" id="test" style="float:left; margin-left:16px; margin-top:10px; margin-right:12px; font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:16px;">Seleccionar un elemento</a>');
                 
             });
             
@@ -934,6 +943,18 @@
                CopiarElementos();
                 
             });
+            
+            $('#BajarNivel').click(function(){                 
+                
+               BajarNivel();
+                
+            });
+            
+            $('#SubirNivel').click(function(){                 
+                
+               SubirNivel();
+                
+            });
         
         }); //End jQuery ready function
         
@@ -945,7 +966,7 @@
     <div style="border:6px white solid; width:1100px; height:746px; margin:0 auto 0 auto;">
         <img id="imgloader" class="Loader" src="res/img/imgloader.gif"/>
         <div style="background-color:#e8e8e8; border:0px black solid; width:1094px; height:60px;">
-            <label style="color:black; margin-left:130px; margin-top:10px; float:left; font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:26px;">Bienvenido a Ambros&iacute;a BackEnd Data v0.1.4 por Apolosoft (c) 2017</label>								
+            <label style="color:black; margin-left:130px; margin-top:10px; float:left; font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:26px;">Bienvenido a Ambros&iacute;a BackEnd Data v0.1.5 por Apolosoft (c) 2017</label>								
         </div>
         <div style="background-color:#e8e8e8; border:0px black solid; width:1094px; height:626px; margin-top:6px;">
             <div id="imgcontainer" style="background-color:#e8e8e8; border:6px white solid; width:754px; height:494px; margin-top:64px; margin-left:30px; float:left;">
@@ -972,18 +993,26 @@
                     <span class="glyphicon glyphicon-minus-sign" aria-hidden="true"></span> Borrar
                 </button>
                 <button type="button" id="EditarElemento" class="btn btn-default btn-lg" style="float:right; margin-right:14px; margin-top:14px;">
-                    <span class="glyphicon glyphicon glyphicon-edit" aria-hidden="true"></span> Editar
+                    <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Editar
                 </button>
                 <button type="button" id="MoverElemento" class="btn btn-default btn-lg" style="float:right; margin-right:14px; margin-top:14px;">
-                    <span class="glyphicon glyphicon glyphicon-move" aria-hidden="true"></span> Mover
+                    <span class="glyphicon glyphicon-move" aria-hidden="true"></span> Mover
                 </button>
                 <button type="button" id="CopiarElementos" class="btn btn-default btn-lg" style="float:right; margin-right:14px; margin-top:14px;">
-                    <span class="glyphicon glyphicon glyphicon-copy" aria-hidden="true"></span> Copiar
+                    <span class="glyphicon glyphicon-copy" aria-hidden="true"></span> Copiar
+                </button>
+                <button type="button" id="BajarNivel" class="btn btn-default btn-lg" style="float:right; margin-right:14px; margin-top:14px;">
+                    <span class="glyphicon glyphicon-download" aria-hidden="true"></span> Bajar
+                </button>
+                <button type="button" id="SubirNivel" class="btn btn-default btn-lg" style="float:right; margin-right:14px; margin-top:14px;">
+                    <span class="glyphicon glyphicon-upload" aria-hidden="true"></span> Subir
                 </button>
             </div>
-            <div id="elementoscontainer" style="background-color:#e8e8e8; border:6px white solid; width:529px; height:506px; margin-top:12px; margin-left:12px; float:left; position:relative; overflow-x:hidden; overflow-y:scroll;">
+            <div id="pathcontainer" style="float:left; background-color:#e8e8e8; border:0px black solid; width:1070px; height:40px; margin-top:0px; margin-left:12px;">
             </div>
-            <div id="galeriacontainer" style="background-color:#e8e8e8; border:6px white solid; width:529px; height:506px; margin-top:12px; margin-left:12px; float:left; position:relative; overflow-x:hidden; overflow-y:scroll;">
+            <div id="elementoscontainer" style="background-color:#e8e8e8; border:6px white solid; width:529px; height:478px; margin-top:0px; margin-left:12px; float:left; position:relative; overflow-x:hidden; overflow-y:scroll;">
+            </div>
+            <div id="galeriacontainer" style="background-color:#e8e8e8; border:6px white solid; width:529px; height:478px; margin-top:0px; margin-left:12px; float:left; position:relative; overflow-x:hidden; overflow-y:scroll;">
             </div>
         </div>
         <div style="background-color:#e8e8e8; border:0px black solid; width:1094px; height:40px; margin-top:6px;">
