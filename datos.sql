@@ -1,7 +1,7 @@
 -- --------------------------------------------------------
--- Host:                         eu-cdbr-west-01.cleardb.com
--- Versión del servidor:         5.5.56-log - MySQL Community Server (GPL)
--- SO del servidor:              Linux
+-- Host:                         127.0.0.1
+-- Versión del servidor:         5.5.8 - MySQL Community Server (GPL)
+-- SO del servidor:              Win32
 -- HeidiSQL Versión:             8.3.0.4694
 -- --------------------------------------------------------
 
@@ -10,7 +10,7 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
--- Volcando estructura para tabla heroku_f5b0ff88b3e8283.elementos
+-- Volcando estructura para tabla ambrosia.elementos
 CREATE TABLE IF NOT EXISTS `elementos` (
   `ElementoId` int(11) NOT NULL AUTO_INCREMENT,
   `PadreId` int(11) NOT NULL,
@@ -25,9 +25,9 @@ CREATE TABLE IF NOT EXISTS `elementos` (
   `TieneImpresora` tinyint(4) NOT NULL,
   `TieneTerminal` tinyint(4) NOT NULL,
   PRIMARY KEY (`ElementoId`)
-) ENGINE=InnoDB AUTO_INCREMENT=6355 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6448 DEFAULT CHARSET=utf8;
 
--- Volcando datos para la tabla heroku_f5b0ff88b3e8283.elementos: ~60 rows (aproximadamente)
+-- Volcando datos para la tabla ambrosia.elementos: ~55 rows (aproximadamente)
 /*!40000 ALTER TABLE `elementos` DISABLE KEYS */;
 INSERT INTO `elementos` (`ElementoId`, `PadreId`, `CompanyId`, `Descripcion`, `Precio`, `Impuesto`, `ImprimirEnFactura`, `ImprimirEnComanda`, `ColorLetras`, `ColorFondo`, `TieneImpresora`, `TieneTerminal`) VALUES
 	(1054, 0, 104, 'Menu Especial', 22.00, 7.00, 1, 0, '#ffffff', '#000000', 0, 0),
@@ -42,58 +42,53 @@ INSERT INTO `elementos` (`ElementoId`, `PadreId`, `CompanyId`, `Descripcion`, `P
 	(1174, -1, 104, 'Vinos', 0.00, 0.00, 0, 0, '#000000', '#f2b311', 1, 1),
 	(1214, -1, 104, 'Pescado Plancha', 0.04, 0.04, 0, 0, '#ed0e52', '#000002', 1, 1),
 	(1284, 0, 104, 'Pizzas', 0.00, 0.00, 0, 0, '#f50a34', '#000000', 0, 0),
-	(1714, 0, 4, 'Cafe con leche', 10.00, 10.00, 1, 1, '#000000', '#f00c87', 1, 1),
-	(1724, 0, 4, 'Licores', 0.00, 0.00, 1, 1, '#000000', '#0cf067', 0, 1),
-	(2114, 0, 4, 'Chuletas Cordero', 12.00, 7.00, 1, 1, '#000000', '#e05e14', 1, 1),
-	(2124, 0, 4, 'Test', 0.00, 0.00, 1, 1, '#ffffff', '#000000', 1, 1),
-	(2134, 0, 4, 'Pescado', 0.00, 0.00, 1, 1, '#ffffff', '#1543e6', 1, 1),
-	(2154, 0, 4, 'Licores', 0.00, 0.00, 1, 1, '#000000', '#0cf067', 1, 1),
-	(2164, 0, 4, 'Ensalada', 0.00, 7.00, 1, 1, '#d42424', '#de9b14', 0, 1),
-	(2174, 0, 4, 'Pescados', 0.00, 0.00, 1, 1, '#a15555', '#1d7d43', 0, 0),
-	(2184, 0, 4, 'Chuletas Cordero', 12.00, 7.00, 1, 1, '#000000', '#e05e14', 1, 1),
+	(2134, 0, 4, 'Pescados', 0.00, 0.00, 0, 0, '#ffffff', '#1543e6', 0, 0),
 	(2194, 0, 4, 'Menu del Dia', 0.00, 0.00, 1, 1, '#000000', '#f0870c', 1, 1),
 	(2204, 0, 4, 'Postres', 0.00, 0.00, 0, 0, '#fcfcfc', '#e6197b', 1, 1),
 	(2214, 0, 4, 'Carnes', 0.00, 0.00, 1, 1, '', '', 0, 0),
-	(2224, 0, 4, 'Cafe con leche', 0.00, 0.00, 0, 0, '#000000', '#f00c87', 1, 1),
-	(3064, 0, 4, 'Carnes', 0.00, 0.00, 1, 1, '', '', 0, 0),
-	(3074, 0, 4, 'Test', 0.00, 0.00, 1, 1, '#ffffff', '#000000', 1, 1),
-	(3084, 0, 4, 'Chuletas Cordero', 12.00, 7.00, 1, 1, '#000000', '#e05e14', 1, 1),
-	(3094, 0, 4, 'Postres', 0.00, 0.00, 0, 0, '#fcfcfc', '#e6197b', 1, 1),
-	(3104, 0, 4, 'Ensalada', 0.00, 7.00, 1, 1, '#d42424', '#de9b14', 1, 1),
+	(3104, 0, 4, 'Ensaladas', 0.00, 0.00, 0, 0, '#d42424', '#de9b14', 0, 0),
 	(3114, 0, 4, 'Licores', 0.00, 0.00, 0, 0, '#000000', '#0cf067', 1, 1),
-	(3124, 0, 4, 'Pescado', 0.00, 0.00, 1, 1, '#ffffff', '#1543e6', 1, 1),
-	(3464, 0, 4, 'Carnes', 0.00, 0.00, 1, 1, '', '', 0, 0),
-	(3474, 0, 4, 'Carnes', 0.00, 0.00, 1, 1, '', '', 0, 0),
-	(3524, 0, 4, 'Chuletas Cordero', 12.00, 7.00, 1, 1, '#000000', '#e05e14', 1, 1),
-	(3564, 0, 4, 'Licores', 0.00, 0.00, 0, 0, '#000000', '#0cf067', 1, 1),
-	(4204, 0, 4, 'Chuletas Cordero', 12.00, 7.00, 1, 1, '#000000', '#e05e14', 1, 1),
-	(4254, 0, 4, 'Ensalada', 0.00, 7.00, 1, 1, '#d42424', '#de9b14', 1, 1),
-	(4304, 0, 4, 'Menu del Dia', 0.00, 0.00, 1, 1, '#000000', '#f0870c', 1, 1),
-	(4434, 0, 4, 'Test', 0.00, 0.00, 1, 1, '#ffffff', '#000000', 1, 1),
-	(4614, 0, 4, 'Licores', 0.00, 0.00, 0, 0, '#000000', '#0cf067', 1, 1),
-	(4694, 0, 4, 'Menu del Dia', 0.00, 0.00, 1, 1, '#000000', '#f0870c', 1, 1),
-	(6184, 0, 4, 'Cafe con leche', 0.00, 0.00, 0, 0, '#000000', '#f00c87', 1, 1),
-	(6194, 0, 4, 'Chuletas Cordero', 12.00, 7.00, 1, 1, '#000000', '#e05e14', 1, 1),
-	(6204, 0, 4, 'Pescado', 0.00, 0.00, 1, 1, '#ffffff', '#1543e6', 1, 1),
-	(6214, 0, 4, 'Licores', 0.00, 0.00, 0, 0, '#000000', '#0cf067', 1, 1),
-	(6224, 0, 4, 'Test', 0.00, 0.00, 1, 1, '#ffffff', '#000000', 1, 1),
-	(6234, 0, 4, 'Licores', 0.00, 0.00, 0, 0, '#000000', '#0cf067', 1, 1),
-	(6244, 0, 4, 'Pescados', 0.00, 0.00, 1, 1, '#a15555', '#1d7d43', 0, 0),
-	(6254, 0, 4, 'Postres', 0.00, 0.00, 0, 0, '#fcfcfc', '#e6197b', 1, 1),
-	(6264, 0, 4, 'Chuletas Cordero', 12.00, 7.00, 1, 1, '#000000', '#e05e14', 1, 1),
-	(6274, 0, 4, 'Ensalada', 0.00, 7.00, 1, 1, '#d42424', '#de9b14', 1, 1),
-	(6284, 0, 4, 'Carnes', 0.00, 0.00, 1, 1, '', '', 0, 0),
-	(6294, 0, 4, 'Test', 0.00, 0.00, 1, 1, '#ffffff', '#000000', 1, 1),
-	(6304, 0, 4, 'Menu del Dia', 0.00, 0.00, 1, 1, '#000000', '#f0870c', 1, 1),
-	(6314, 0, 4, 'Ensalada', 0.00, 7.00, 1, 1, '#d42424', '#de9b14', 1, 1),
-	(6324, 0, 4, 'Chuletas Cordero', 12.00, 7.00, 1, 1, '#000000', '#e05e14', 1, 1),
-	(6334, 0, 4, 'Carnes', 0.00, 0.00, 1, 1, '', '', 0, 0),
-	(6344, 0, 4, 'Postres', 0.00, 0.00, 0, 0, '#fcfcfc', '#e6197b', 1, 1),
-	(6354, 0, 4, 'Cafe con leche', 0.00, 0.00, 0, 0, '#000000', '#f00c87', 1, 1);
+	(6372, 2214, 4, 'Chuletas Cordero', 12.00, 7.00, 1, 1, '#000000', '#e05e14', 1, 1),
+	(6408, 6421, 4, 'Cafe con leche', 2.00, 10.00, 1, 1, '#000000', '#f00c87', 1, 1),
+	(6411, 2194, 4, 'Primeros Menus', 0.00, 0.00, 0, 1, '#000000', '#e68515', 1, 1),
+	(6412, 6411, 4, 'Ensalada Mixta', 0.00, 0.00, 0, 1, '#000000', '#f57e11', 1, 1),
+	(6413, 6411, 4, 'Sopa de Verduras', 0.00, 0.00, 0, 1, '#000000', '#ed7c13', 1, 1),
+	(6415, 6411, 4, 'Crema de Tomate', 0.00, 0.00, 0, 1, '#000000', '#ed7c13', 1, 1),
+	(6416, 2194, 4, 'Segundos Menus', 0.00, 0.00, 0, 1, '#000000', '#ed7c13', 1, 1),
+	(6417, 6411, 4, 'Crema de Champiñon', 0.00, 0.00, 0, 1, '#000000', '#eb9310', 1, 1),
+	(6418, 0, 4, 'Vinos', 0.00, 0.00, 0, 0, '#000000', '#e81548', 0, 0),
+	(6420, 2214, 4, 'Chuletas Cerdo', 12.00, 10.00, 1, 1, '#000000', '#e6177a', 1, 1),
+	(6421, 0, 4, 'Cafes', 0.00, 0.00, 0, 0, '#000000', '#17e61f', 0, 0),
+	(6422, -1, 4, 'Con Hielo', 0.00, 0.00, 0, 1, '#000000', '#e6177a', 1, 1),
+	(6423, 6421, 4, 'Cafe Solo', 2.00, 10.00, 1, 1, '#000000', '#f00c87', 1, 1),
+	(6424, 6423, 4, 'Con Hielo', 0.00, 0.00, 0, 1, '#000000', '#e6177a', 1, 1),
+	(6425, 3114, 4, 'Pacharan', 5.00, 10.00, 1, 1, '#ebdada', '#4b13eb', 1, 1),
+	(6426, 6416, 4, 'Pollo Asado', 0.00, 0.00, 0, 1, '#ebdada', '#4b13eb', 1, 1),
+	(6427, -1, 4, 'Sin Salsa', 0.00, 0.00, 0, 1, '#ebdada', '#4b13eb', 1, 1),
+	(6428, 6426, 4, 'Sin Salsa', 0.00, 0.00, 0, 1, '#ebdada', '#4b13eb', 1, 1),
+	(6429, -1, 4, 'Extra Tomate', 0.00, 0.00, 0, 1, '#ebdada', '#4b13eb', 1, 1),
+	(6430, 6412, 4, 'Extra Tomate', 0.00, 0.00, 0, 1, '#ebdada', '#4b13eb', 1, 1),
+	(6431, -1, 4, 'Taza', 0.00, 0.00, 0, 1, '#000000', '#15eb91', 1, 1),
+	(6432, 6408, 4, 'Taza', 0.00, 0.00, 0, 1, '#000000', '#15eb91', 1, 1),
+	(6433, 6423, 4, 'Taza', 0.00, 0.00, 0, 1, '#000000', '#15eb91', 1, 1),
+	(6434, 2134, 4, 'Calamares', 8.00, 10.00, 1, 1, '#000000', '#f0d911', 1, 1),
+	(6435, 2204, 4, 'Flan de la Casa', 3.50, 10.00, 1, 1, '#000000', '#0eed3f', 1, 1),
+	(6436, 3104, 4, 'Ensalada Mixta', 4.50, 10.00, 1, 1, '#000000', '#0eed3f', 1, 1),
+	(6437, 0, 4, 'Bebidas', 0.00, 0.00, 0, 0, '#000000', '#0eed3f', 0, 0),
+	(6438, 6437, 4, 'Caña ', 1.50, 10.00, 1, 1, '#000000', '#0eed3f', 1, 1),
+	(6439, 2204, 4, 'Helado triple sabor', 2.50, 10.00, 1, 1, '#968738', '#573708', 1, 1),
+	(6440, 6439, 4, 'Birutas de almendra', 0.00, 0.00, 0, 1, '#191916', '#db8b12', 1, 1),
+	(6441, 6437, 4, 'Gyn tonyc', 3.00, 10.00, 1, 1, '#f0cb0a', '#f7f7f7', 1, 1),
+	(6442, 2134, 4, 'Sardinas', 6.00, 10.00, 1, 1, '#191917', '#4c4d49', 1, 1),
+	(6443, 6416, 4, 'Spaguetis', 0.00, 10.00, 0, 1, '#ad982a', '#f53207', 1, 1),
+	(6444, 6443, 4, 'Extra Tomate', 0.00, 0.00, 0, 1, '#ebdada', '#4b13eb', 1, 1),
+	(6445, 3114, 4, 'Licor de moras', 3.73, 10.00, 1, 1, '#f5eb00', '#071ff5', 1, 1),
+	(6446, -1, 4, 'Sin Cebolla', 0.00, 0.00, 0, 1, '#000000', '#35eb17', 1, 1),
+	(6447, 6412, 4, 'Sin Cebolla', 0.00, 0.00, 0, 1, '#000000', '#35eb17', 1, 1);
 /*!40000 ALTER TABLE `elementos` ENABLE KEYS */;
 
 
--- Volcando estructura para tabla heroku_f5b0ff88b3e8283.empleados
+-- Volcando estructura para tabla ambrosia.empleados
 CREATE TABLE IF NOT EXISTS `empleados` (
   `EmpleadoId` int(11) NOT NULL AUTO_INCREMENT,
   `NombreEmpleado` varchar(30) NOT NULL,
@@ -102,7 +97,7 @@ CREATE TABLE IF NOT EXISTS `empleados` (
   PRIMARY KEY (`EmpleadoId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=95 DEFAULT CHARSET=utf8;
 
--- Volcando datos para la tabla heroku_f5b0ff88b3e8283.empleados: ~5 rows (aproximadamente)
+-- Volcando datos para la tabla ambrosia.empleados: ~5 rows (aproximadamente)
 /*!40000 ALTER TABLE `empleados` DISABLE KEYS */;
 INSERT INTO `empleados` (`EmpleadoId`, `NombreEmpleado`, `ClaveEmpleado`, `CompanyId`) VALUES
 	(34, 'Roberto', '1234', 34),
@@ -113,13 +108,13 @@ INSERT INTO `empleados` (`EmpleadoId`, `NombreEmpleado`, `ClaveEmpleado`, `Compa
 /*!40000 ALTER TABLE `empleados` ENABLE KEYS */;
 
 
--- Volcando estructura para tabla heroku_f5b0ff88b3e8283.impresoraconfig
+-- Volcando estructura para tabla ambrosia.impresoraconfig
 CREATE TABLE IF NOT EXISTS `impresoraconfig` (
   `ElementoId` int(11) NOT NULL,
   `NombreImpresora` varchar(30) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Volcando datos para la tabla heroku_f5b0ff88b3e8283.impresoraconfig: ~1.056 rows (aproximadamente)
+-- Volcando datos para la tabla ambrosia.impresoraconfig: ~950 rows (aproximadamente)
 /*!40000 ALTER TABLE `impresoraconfig` DISABLE KEYS */;
 INSERT INTO `impresoraconfig` (`ElementoId`, `NombreImpresora`) VALUES
 	(104, 'undefined'),
@@ -801,9 +796,6 @@ INSERT INTO `impresoraconfig` (`ElementoId`, `NombreImpresora`) VALUES
 	(6454, 'Barra'),
 	(6514, 'Barra'),
 	(6534, 'Cocina'),
-	(2134, 'Cocina'),
-	(2134, 'Cocina-Segundos'),
-	(2134, 'Barra'),
 	(6624, 'Cocina'),
 	(6624, 'Cocina-Segundos'),
 	(6624, 'Barra'),
@@ -834,7 +826,6 @@ INSERT INTO `impresoraconfig` (`ElementoId`, `NombreImpresora`) VALUES
 	(6774, 'Barra'),
 	(6764, 'Cocina'),
 	(6794, 'Cocina-Segundos'),
-	(1714, 'Cocina'),
 	(6864, 'Cocina'),
 	(6864, 'Cocina-Segundos'),
 	(6864, 'Barra'),
@@ -875,19 +866,97 @@ INSERT INTO `impresoraconfig` (`ElementoId`, `NombreImpresora`) VALUES
 	(6454, 'Cocina'),
 	(6474, 'Cocina'),
 	(6474, 'Cocina-Segundos'),
-	(6474, 'Barra');
+	(6474, 'Barra'),
+	(6355, 'Cocina'),
+	(6356, 'Cocina'),
+	(6367, 'Cocina'),
+	(6367, 'Cocina-Segundos'),
+	(6367, 'Barra'),
+	(6362, 'Cocina-Segundos'),
+	(6365, 'Cocina'),
+	(6365, 'Cocina-Segundos'),
+	(6365, 'Barra'),
+	(6374, 'Cocina'),
+	(6374, 'Cocina-Segundos'),
+	(6374, 'Barra'),
+	(6370, 'Cocina'),
+	(6373, 'Cocina'),
+	(6373, 'Cocina-Segundos'),
+	(6373, 'Barra'),
+	(6372, 'Cocina-Segundos'),
+	(6394, 'Cocina'),
+	(6394, 'Cocina-Segundos'),
+	(6394, 'Barra'),
+	(6388, 'Cocina'),
+	(6388, 'Cocina-Segundos'),
+	(6388, 'Barra'),
+	(6386, 'Cocina'),
+	(6386, 'Cocina-Segundos'),
+	(6386, 'Barra'),
+	(6393, 'Barra'),
+	(6387, 'Barra'),
+	(6392, 'Barra'),
+	(6404, 'Cocina'),
+	(6404, 'Cocina-Segundos'),
+	(6404, 'Barra'),
+	(6395, 'Barra'),
+	(6391, 'Cocina'),
+	(6391, 'Cocina-Segundos'),
+	(6391, 'Barra'),
+	(6396, 'Barra'),
+	(6406, 'Cocina'),
+	(1714, 'Cocina'),
+	(1714, 'Cocina-Segundos'),
+	(1714, 'Barra'),
+	(6409, 'Cocina'),
+	(6410, 'Cocina'),
+	(6411, 'Cocina'),
+	(6412, 'Cocina'),
+	(6413, 'Cocina'),
+	(6414, 'Cocina'),
+	(6415, 'Cocina'),
+	(6416, 'Cocina'),
+	(6417, 'Cocina'),
+	(6419, 'Cocina'),
+	(6420, 'Cocina'),
+	(6422, 'Barra'),
+	(6408, 'Barra'),
+	(6423, 'Barra'),
+	(6424, 'Barra'),
+	(6425, 'Barra'),
+	(6426, 'Cocina'),
+	(6427, 'Cocina'),
+	(6428, 'Cocina'),
+	(6429, 'Cocina'),
+	(6430, 'Cocina'),
+	(6431, 'Barra'),
+	(6432, 'Barra'),
+	(6433, 'Barra'),
+	(6434, 'Cocina'),
+	(6435, 'Cocina'),
+	(6436, 'Cocina'),
+	(6438, 'Barra'),
+	(6439, 'Cocina'),
+	(6440, 'Cocina'),
+	(6441, 'Barra'),
+	(6442, 'Cocina'),
+	(6443, 'Cocina-Segundos'),
+	(6444, 'Cocina'),
+	(6445, 'Barra'),
+	(6446, 'Cocina'),
+	(6447, 'Cocina');
 /*!40000 ALTER TABLE `impresoraconfig` ENABLE KEYS */;
 
 
--- Volcando estructura para tabla heroku_f5b0ff88b3e8283.impresoras
+-- Volcando estructura para tabla ambrosia.impresoras
 CREATE TABLE IF NOT EXISTS `impresoras` (
   `ImpresoraId` int(11) NOT NULL AUTO_INCREMENT,
   `NombreImpresora` varchar(30) NOT NULL,
   `CompanyId` int(11) NOT NULL,
   PRIMARY KEY (`ImpresoraId`)
-) ENGINE=InnoDB AUTO_INCREMENT=375 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=376 DEFAULT CHARSET=utf8;
 
--- Volcando datos para la tabla heroku_f5b0ff88b3e8283.impresoras: ~22 rows (aproximadamente)
+-- Volcando datos para la tabla ambrosia.impresoras: ~23 rows (aproximadamente)
 /*!40000 ALTER TABLE `impresoras` DISABLE KEYS */;
 INSERT INTO `impresoras` (`ImpresoraId`, `NombreImpresora`, `CompanyId`) VALUES
 	(74, 'Cocina-Entrantes', 14),
@@ -911,11 +980,12 @@ INSERT INTO `impresoras` (`ImpresoraId`, `NombreImpresora`, `CompanyId`) VALUES
 	(344, 'Test', 104),
 	(354, 'Test2', 104),
 	(364, 'Test3', 104),
-	(374, 'Test4', 104);
+	(374, 'Test4', 104),
+	(375, 'Caja', 4);
 /*!40000 ALTER TABLE `impresoras` ENABLE KEYS */;
 
 
--- Volcando estructura para tabla heroku_f5b0ff88b3e8283.login
+-- Volcando estructura para tabla ambrosia.login
 CREATE TABLE IF NOT EXISTS `login` (
   `CompanyId` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `User` varchar(20) NOT NULL,
@@ -931,7 +1001,7 @@ CREATE TABLE IF NOT EXISTS `login` (
   PRIMARY KEY (`CompanyId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=105 DEFAULT CHARSET=utf8;
 
--- Volcando datos para la tabla heroku_f5b0ff88b3e8283.login: ~11 rows (aproximadamente)
+-- Volcando datos para la tabla ambrosia.login: ~11 rows (aproximadamente)
 /*!40000 ALTER TABLE `login` DISABLE KEYS */;
 INSERT INTO `login` (`CompanyId`, `User`, `Pass`, `Email`, `NombreComercial`, `NombreFiscal`, `Direccion`, `CodigoPostal`, `Ciudad`, `NIF`, `Telefono`) VALUES
 	(4, 'Caspi', '1234', 'alonso_caspi@hotmail.com', 'Restaurante Los Pescadores 2', 'Bahia S.L.', 'Playa del Bajondillo 24', '12345', 'Torrremolinos', '12123123-X', '952445566'),
@@ -948,13 +1018,13 @@ INSERT INTO `login` (`CompanyId`, `User`, `Pass`, `Email`, `NombreComercial`, `N
 /*!40000 ALTER TABLE `login` ENABLE KEYS */;
 
 
--- Volcando estructura para tabla heroku_f5b0ff88b3e8283.terminalconfig
+-- Volcando estructura para tabla ambrosia.terminalconfig
 CREATE TABLE IF NOT EXISTS `terminalconfig` (
   `ElementoId` int(11) NOT NULL,
   `NombreTerminal` varchar(30) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Volcando datos para la tabla heroku_f5b0ff88b3e8283.terminalconfig: ~1.146 rows (aproximadamente)
+-- Volcando datos para la tabla ambrosia.terminalconfig: ~702 rows (aproximadamente)
 /*!40000 ALTER TABLE `terminalconfig` DISABLE KEYS */;
 INSERT INTO `terminalconfig` (`ElementoId`, `NombreTerminal`) VALUES
 	(224, 'Caja'),
@@ -1560,10 +1630,6 @@ INSERT INTO `terminalconfig` (`ElementoId`, `NombreTerminal`) VALUES
 	(6454, 'Cocina'),
 	(6454, 'Caja2'),
 	(6534, 'Cocina'),
-	(2134, 'Caja'),
-	(2134, 'Barra'),
-	(2134, 'Cocina'),
-	(2134, 'Caja2'),
 	(6624, 'Caja'),
 	(6624, 'Barra'),
 	(6624, 'Cocina'),
@@ -1610,7 +1676,6 @@ INSERT INTO `terminalconfig` (`ElementoId`, `NombreTerminal`) VALUES
 	(6774, 'Caja2'),
 	(6754, 'Caja2'),
 	(2164, 'Cocina'),
-	(1714, 'Caja'),
 	(6804, 'Cocina'),
 	(6844, 'Caja'),
 	(6854, 'Caja'),
@@ -1665,11 +1730,99 @@ INSERT INTO `terminalconfig` (`ElementoId`, `NombreTerminal`) VALUES
 	(6474, 'Cocina'),
 	(6474, 'Caja2'),
 	(6374, 'Cocina'),
-	(6464, 'Caja2');
+	(6464, 'Caja2'),
+	(6355, 'Caja'),
+	(6356, 'Caja'),
+	(6362, 'Cocina'),
+	(6357, 'Caja2'),
+	(6367, 'Caja'),
+	(6367, 'Barra'),
+	(6367, 'Cocina'),
+	(6367, 'Caja2'),
+	(6365, 'Caja'),
+	(6365, 'Barra'),
+	(6365, 'Cocina'),
+	(6365, 'Caja2'),
+	(6359, 'Cocina'),
+	(6374, 'Caja'),
+	(6374, 'Barra'),
+	(6374, 'Cocina'),
+	(6374, 'Caja2'),
+	(6370, 'Caja'),
+	(6373, 'Caja'),
+	(6373, 'Barra'),
+	(6373, 'Cocina'),
+	(6373, 'Caja2'),
+	(6372, 'Cocina'),
+	(6371, 'Caja2'),
+	(6375, 'Cocina'),
+	(6394, 'Caja'),
+	(6394, 'Barra'),
+	(6394, 'Cocina'),
+	(6394, 'Caja2'),
+	(6386, 'Caja'),
+	(6386, 'Barra'),
+	(6386, 'Cocina'),
+	(6386, 'Caja2'),
+	(6393, 'Barra'),
+	(6391, 'Caja'),
+	(6391, 'Barra'),
+	(6391, 'Cocina'),
+	(6391, 'Caja2'),
+	(6404, 'Caja'),
+	(6404, 'Barra'),
+	(6404, 'Cocina'),
+	(6404, 'Caja2'),
+	(6388, 'Caja'),
+	(6388, 'Barra'),
+	(6388, 'Cocina'),
+	(6388, 'Caja2'),
+	(6406, 'Cocina'),
+	(1714, 'Caja'),
+	(1714, 'Barra'),
+	(1714, 'Cocina'),
+	(1714, 'Caja2'),
+	(6409, 'Cocina'),
+	(6410, 'Cocina'),
+	(6411, 'Cocina'),
+	(6412, 'Cocina'),
+	(6413, 'Cocina'),
+	(6414, 'Cocina'),
+	(6415, 'Cocina'),
+	(6416, 'Cocina'),
+	(6417, 'Cocina'),
+	(6419, 'Cocina'),
+	(6420, 'Cocina'),
+	(6422, 'Barra'),
+	(6408, 'Barra'),
+	(6423, 'Barra'),
+	(6424, 'Barra'),
+	(6425, 'Barra'),
+	(6426, 'Cocina'),
+	(6427, 'Cocina'),
+	(6428, 'Cocina'),
+	(6429, 'Cocina'),
+	(6430, 'Cocina'),
+	(6431, 'Barra'),
+	(6432, 'Barra'),
+	(6433, 'Barra'),
+	(6434, 'Cocina'),
+	(6435, 'Cocina'),
+	(6436, 'Cocina'),
+	(6438, 'Barra'),
+	(6439, 'Cocina'),
+	(6440, 'Cocina'),
+	(6441, 'Barra'),
+	(6442, 'Cocina'),
+	(6443, 'Cocina'),
+	(6444, 'Cocina'),
+	(6445, 'Barra'),
+	(6446, 'Cocina'),
+	(6447, 'Cocina');
 /*!40000 ALTER TABLE `terminalconfig` ENABLE KEYS */;
 
 
--- Volcando estructura para tabla heroku_f5b0ff88b3e8283.terminales
+-- Volcando estructura para tabla ambrosia.terminales
 CREATE TABLE IF NOT EXISTS `terminales` (
   `TerminalId` int(11) NOT NULL AUTO_INCREMENT,
   `NombreTerminal` varchar(30) NOT NULL,
@@ -1677,7 +1830,7 @@ CREATE TABLE IF NOT EXISTS `terminales` (
   PRIMARY KEY (`TerminalId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=215 DEFAULT CHARSET=utf8;
 
--- Volcando datos para la tabla heroku_f5b0ff88b3e8283.terminales: ~10 rows (aproximadamente)
+-- Volcando datos para la tabla ambrosia.terminales: ~10 rows (aproximadamente)
 /*!40000 ALTER TABLE `terminales` DISABLE KEYS */;
 INSERT INTO `terminales` (`TerminalId`, `NombreTerminal`, `CompanyId`) VALUES
 	(74, 'Terminal-Barra', 34),

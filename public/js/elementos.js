@@ -725,7 +725,12 @@ function BajarNivel(){
     for (var i=0;i<LevelControl+1;i++) {        
         var cName = 'Lb'+aLevels[i];
         $("#pathcontainer").append('<a href="#" id='+cName+' onClick="path_click(id)" style="float:left; margin-left:16px; margin-top:10px; margin-right:12px; font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:16px;">'+aPaths[i]+'</a>');
-    }    
+    }
+    
+    $('#MoverElemento').prop('disabled',true);
+    $('#BorrarElemento').prop('disabled',true);
+    $('#EditarElemento').prop('disabled',true);
+    $('#CopiarElementos').prop('disabled',true);
     
 }
 
@@ -764,5 +769,11 @@ function path_click(clicked_id){
         var cName = 'Lb'+aLevels[i];
         $("#pathcontainer").append('<a href="#" id='+cName+' onClick="path_click(id)" style="float:left; margin-left:16px; margin-top:10px; margin-right:12px; font-family:Arial,Helvetica,sans-serif; font-weight:bold; font-size:16px;">'+aPaths[i]+'</a>');
     }
+    
+    $('#MoverElemento').prop('disabled',true);
+    $('#BorrarElemento').prop('disabled',true);
+    $('#EditarElemento').prop('disabled',true);
+    $('#CopiarElementos').prop('disabled',true);
+    $('#BajarNivel').prop('disabled',true);
     
 }
